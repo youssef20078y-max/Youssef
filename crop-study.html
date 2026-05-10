@@ -1,0 +1,3084 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إنتاج المحاصيل - كلية الزراعة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green-dark: #1a3a2a;
+  --green-mid: #2d6a4f;
+  --green-light: #52b788;
+  --green-pale: #95d5b2;
+  --gold: #d4a017;
+  --gold-light: #f0c040;
+  --cream: #fefae0;
+  --cream-dark: #f5e6c8;
+  --brown: #6b3d14;
+  --text-dark: #1a1a1a;
+  --text-mid: #3a3a3a;
+  --white: #ffffff;
+  --shadow: rgba(26,58,42,0.18);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background: var(--green-dark);
+  color: var(--text-dark);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ========== BACKGROUND ========== */
+.bg-pattern {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(82,183,136,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(212,160,23,0.08) 0%, transparent 50%),
+    linear-gradient(160deg, #0d2118 0%, #1a3a2a 40%, #0f2d1c 100%);
+}
+.bg-pattern::before {
+  content:'';
+  position: absolute; inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(82,183,136,0.04) 40px, rgba(82,183,136,0.04) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(82,183,136,0.04) 40px, rgba(82,183,136,0.04) 41px);
+}
+
+/* ========== SCREENS ========== */
+.screen { display:none; position:relative; z-index:1; min-height:100vh; }
+.screen.active { display:flex; }
+
+/* ========== LOGIN SCREEN ========== */
+#loginScreen {
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-card {
+  background: rgba(254,250,224,0.97);
+  border-radius: 24px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,160,23,0.3);
+  animation: slideUp 0.6s ease;
+}
+
+@keyframes slideUp {
+  from { opacity:0; transform: translateY(30px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.login-logo .icon {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 12px;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.login-logo h1 {
+  font-family: 'Amiri', serif;
+  font-size: 26px;
+  color: var(--green-dark);
+  font-weight: 700;
+}
+.login-logo p {
+  color: var(--green-mid);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+.form-group label {
+  display: block;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid rgba(45,106,79,0.25);
+  border-radius: 12px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 15px;
+  background: white;
+  color: var(--text-dark);
+  transition: all 0.3s;
+  direction: rtl;
+}
+.form-group input:focus {
+  outline: none;
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 4px rgba(45,106,79,0.12);
+}
+
+.btn-login {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--green-mid), var(--green-dark));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 8px;
+}
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(45,106,79,0.4);
+}
+.btn-login:active { transform: translateY(0); }
+
+.login-note {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 12px;
+  color: #888;
+}
+
+/* ========== MAIN APP ========== */
+#appScreen {
+  flex-direction: column;
+}
+
+/* NAV */
+.nav {
+  background: rgba(13,33,24,0.97);
+  backdrop-filter: blur(20px);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky; top:0; z-index:100;
+  border-bottom: 1px solid rgba(82,183,136,0.2);
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--cream);
+  font-family: 'Amiri', serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+.nav-brand span { font-size: 24px; }
+
+.nav-tabs {
+  display: flex; gap: 4px;
+}
+.nav-tab {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: rgba(254,250,224,0.6);
+  font-family: 'Cairo', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.nav-tab:hover { background: rgba(82,183,136,0.15); color: var(--green-pale); }
+.nav-tab.active {
+  background: var(--green-mid);
+  color: white;
+}
+.nav-user {
+  color: var(--gold-light);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-user .logout-btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: rgba(255,255,255,0.6);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.nav-user .logout-btn:hover { background: rgba(255,100,100,0.2); color: #ff8888; }
+
+/* PAGE CONTENT */
+.page { display:none; flex:1; }
+.page.active { display:block; }
+
+/* ========== STUDY PAGE ========== */
+#studyPage {
+  padding: 32px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.page-header h2 {
+  font-family: 'Amiri', serif;
+  font-size: 32px;
+  color: var(--cream);
+  margin-bottom: 8px;
+}
+.page-header p { color: var(--green-pale); font-size: 15px; }
+
+.crops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.crop-card {
+  background: rgba(254,250,224,0.97);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px var(--shadow);
+  transition: transform 0.3s, box-shadow 0.3s;
+  animation: fadeIn 0.5s ease both;
+}
+@keyframes fadeIn {
+  from { opacity:0; transform: translateY(20px); }
+  to { opacity:1; transform: translateY(0); }
+}
+.crop-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+}
+
+.crop-header {
+  background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.crop-emoji { font-size: 36px; }
+.crop-title h3 {
+  font-family: 'Amiri', serif;
+  font-size: 20px;
+  color: var(--gold-light);
+  margin-bottom: 2px;
+}
+.crop-title .sci-name {
+  font-style: italic;
+  color: rgba(254,250,224,0.7);
+  font-size: 12px;
+}
+.crop-title .eng-name {
+  color: var(--green-pale);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.crop-body { padding: 20px 24px; }
+
+.info-section { margin-bottom: 16px; }
+.info-section h4 {
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--green-pale);
+  display: flex; align-items: center; gap: 6px;
+}
+.info-section ul {
+  list-style: none;
+  padding: 0;
+}
+.info-section ul li {
+  padding: 4px 0;
+  font-size: 13px;
+  color: var(--text-mid);
+  display: flex; align-items: flex-start; gap: 6px;
+  line-height: 1.6;
+}
+.info-section ul li::before {
+  content: '◆';
+  color: var(--green-light);
+  font-size: 8px;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.family-badge {
+  display: inline-block;
+  background: var(--green-dark);
+  color: var(--gold-light);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* ========== TABLE PAGE ========== */
+#tablePage {
+  padding: 24px;
+}
+.table-container {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.comparison-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(254,250,224,0.97);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+  font-size: 12px;
+}
+.comparison-table thead tr th {
+  background: linear-gradient(135deg, var(--green-dark), #0d4a2e);
+  color: var(--gold-light);
+  padding: 14px 12px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  border-bottom: 2px solid var(--gold);
+  white-space: nowrap;
+  position: sticky; top: 0;
+}
+.comparison-table thead tr th:first-child {
+  text-align: right;
+  min-width: 120px;
+}
+.comparison-table tbody tr {
+  transition: background 0.2s;
+}
+.comparison-table tbody tr:nth-child(even) {
+  background: rgba(149,213,178,0.1);
+}
+.comparison-table tbody tr:hover {
+  background: rgba(82,183,136,0.15);
+}
+.comparison-table tbody tr td {
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(45,106,79,0.1);
+  vertical-align: top;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--text-mid);
+  font-size: 12px;
+}
+.comparison-table tbody tr td:first-child {
+  text-align: right;
+  font-weight: 700;
+  color: var(--green-dark);
+  background: rgba(45,106,79,0.08);
+  white-space: nowrap;
+}
+.crop-name-cell {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.crop-name-cell .ar { font-size: 14px; font-weight: 700; color: var(--green-dark); }
+.crop-name-cell .sci { font-size: 10px; font-style: italic; color: #888; }
+
+/* ========== QUIZ PAGES ========== */
+#quizPage, #tfPage {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.quiz-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.quiz-header h2 {
+  font-family: 'Amiri', serif;
+  font-size: 28px;
+  color: var(--cream);
+}
+.quiz-progress {
+  background: rgba(0,0,0,0.3);
+  border-radius: 20px;
+  height: 8px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+.quiz-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-light), var(--gold-light));
+  border-radius: 20px;
+  transition: width 0.4s ease;
+}
+.quiz-counter {
+  color: var(--green-pale);
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.question-card {
+  background: rgba(254,250,224,0.97);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+  animation: slideIn 0.4s ease;
+}
+@keyframes slideIn {
+  from { opacity:0; transform: translateX(20px); }
+  to { opacity:1; transform: translateX(0); }
+}
+.question-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+.options-list { list-style: none; }
+.option-item {
+  margin-bottom: 12px;
+}
+.option-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border: 2px solid rgba(45,106,79,0.2);
+  border-radius: 12px;
+  background: white;
+  font-family: 'Cairo', sans-serif;
+  font-size: 15px;
+  color: var(--text-dark);
+  cursor: pointer;
+  text-align: right;
+  transition: all 0.2s;
+  direction: rtl;
+}
+.option-btn:hover:not(:disabled) {
+  border-color: var(--green-mid);
+  background: rgba(82,183,136,0.08);
+  transform: translateX(-4px);
+}
+.option-btn.correct {
+  background: rgba(82,183,136,0.2);
+  border-color: var(--green-mid);
+  color: var(--green-dark);
+  font-weight: 700;
+}
+.option-btn.wrong {
+  background: rgba(220,80,80,0.12);
+  border-color: #dc5050;
+  color: #a00;
+}
+
+.explanation-box {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: rgba(212,160,23,0.1);
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--brown);
+  line-height: 1.7;
+  display: none;
+}
+.explanation-box.show { display: block; animation: fadeIn 0.3s ease; }
+.explanation-box strong { color: var(--green-dark); }
+
+.btn-next {
+  display: none;
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--green-mid), var(--green-dark));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-next.show { display: block; animation: fadeIn 0.3s ease; }
+.btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,106,79,0.4); }
+
+/* T/F buttons */
+.tf-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+}
+.tf-btn {
+  flex: 1;
+  padding: 18px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.tf-btn.true-btn {
+  background: rgba(82,183,136,0.15);
+  border-color: var(--green-light);
+  color: var(--green-dark);
+}
+.tf-btn.false-btn {
+  background: rgba(220,80,80,0.1);
+  border-color: #dc5050;
+  color: #a00;
+}
+.tf-btn:hover:not(:disabled) { transform: scale(1.03); }
+.tf-btn.correct { background: rgba(82,183,136,0.35) !important; border-color: var(--green-mid) !important; }
+.tf-btn.wrong { background: rgba(220,80,80,0.3) !important; border-color: #dc5050 !important; }
+
+/* Result Screen */
+.result-screen {
+  text-align: center;
+  padding: 48px 32px;
+  background: rgba(254,250,224,0.97);
+  border-radius: 24px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+}
+.result-score {
+  font-size: 80px;
+  font-weight: 900;
+  color: var(--green-mid);
+  line-height: 1;
+}
+.result-screen h3 {
+  font-family: 'Amiri', serif;
+  font-size: 28px;
+  color: var(--green-dark);
+  margin: 16px 0 8px;
+}
+.result-screen p { color: #666; font-size: 15px; }
+.btn-restart {
+  margin-top: 24px;
+  padding: 14px 40px;
+  background: linear-gradient(135deg, var(--green-mid), var(--green-dark));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-restart:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,106,79,0.4); }
+
+/* Mobile nav */
+@media (max-width: 640px) {
+  .nav { padding: 0 12px; height: auto; flex-wrap: wrap; padding: 10px 12px; gap: 8px; }
+  .nav-tabs { width: 100%; overflow-x: auto; padding-bottom: 4px; }
+  .nav-tab { font-size: 11px; padding: 6px 10px; }
+  .nav-brand { font-size: 14px; }
+  .login-card { padding: 32px 24px; }
+  .crops-grid { grid-template-columns: 1fr; }
+  #studyPage, #quizPage, #tfPage { padding: 16px; }
+  .question-text { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-pattern"></div>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="loginScreen" class="screen active">
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="icon">🌾</span>
+      <h1>إنتاج المحاصيل</h1>
+      <p>كلية الزراعة · د. محمود عزب</p>
+    </div>
+    <div class="form-group">
+      <label>👤 الاسم الكامل</label>
+      <input type="text" id="nameInput" placeholder="أدخل اسمك..." />
+    </div>
+    <div class="form-group">
+      <label>📱 رقم الهاتف</label>
+      <input type="tel" id="phoneInput" placeholder="01xxxxxxxxx" />
+    </div>
+    <button class="btn-login" onclick="handleLogin()">دخول الموقع 🚀</button>
+    <p class="login-note">سيتم حفظ بياناتك تلقائياً</p>
+    <p style="text-align:center;margin-top:14px;font-size:13px;color:var(--green-mid);font-weight:700;letter-spacing:0.5px;">By: Eng Youssef Ibrahim</p>
+  </div>
+</div>
+
+<!-- ===== APP SCREEN ===== -->
+<div id="appScreen" class="screen">
+  <nav class="nav">
+    <div class="nav-brand"><span>🌾</span> إنتاج المحاصيل</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('studyPage', this)">📚 الشرح</button>
+      <button class="nav-tab" onclick="showPage('quizPage', this); openQuiz()">❓ اختياري</button>
+      <button class="nav-tab" onclick="showPage('tfPage', this); openTF()">✅ صح/غلط</button>
+    </div>
+    <div class="nav-user">
+      <span id="userDisplay">👤</span>
+      <button class="logout-btn" onclick="logout()">خروج</button>
+    </div>
+  </nav>
+
+  <!-- ===== STUDY PAGE ===== -->
+  <div id="studyPage" class="page active">
+    <div style="padding:32px 24px; max-width:1200px; margin:0 auto;">
+      <div class="page-header">
+        <h2>🌿 الوصف النباتي للمحاصيل</h2>
+        <p>جميع المحاصيل من منهج د. محمود عزب — ركز على الأسماء العلمية والأرقام</p>
+        <p style="margin-top:10px;font-size:13px;color:var(--gold-light);font-weight:700;">By: Eng Youssef Ibrahim</p>
+      </div>
+      <div class="crops-grid" id="cropsGrid"></div>
+    </div>
+  </div>
+
+  <!-- ===== QUIZ PAGE ===== -->
+  <div id="quizPage" class="page">
+    <div class="quiz-header">
+      <h2>❓ أسئلة اختيار من متعدد</h2>
+      <p style="color:var(--gold-light);font-size:13px;font-weight:700;margin-bottom:8px;">By: Eng Youssef Ibrahim</p>
+      <div class="quiz-progress"><div class="quiz-progress-bar" id="quizBar"></div></div>
+      <div class="quiz-counter" id="quizCounter"></div>
+    </div>
+    <div id="quizContainer"></div>
+  </div>
+
+  <!-- ===== T/F PAGE ===== -->
+  <div id="tfPage" class="page">
+    <div class="quiz-header">
+      <h2>✅ أسئلة صح وغلط</h2>
+      <p style="color:var(--gold-light);font-size:13px;font-weight:700;margin-bottom:8px;">By: Eng Youssef Ibrahim</p>
+      <div class="quiz-progress"><div class="quiz-progress-bar" id="tfBar"></div></div>
+      <div class="quiz-counter" id="tfCounter"></div>
+    </div>
+    <div id="tfContainer"></div>
+  </div>
+
+</div>
+
+<script>
+// ==================== DATA ====================
+const CROPS = [
+  {
+    name: 'الذرة الشامية',
+    emoji: '🌽',
+    sci: 'Zea mays L.',
+    eng: 'Maize / Corn',
+    family: 'Gramineae (النجيلية)',
+    root: [
+      'جذور جنينية: يظهر الجذير أولاً ثم يتبعه جذور أخرى ليصل عددها إلى 4، تمتص الماء والغذاء مبكراً وتتميز بشدة التفرع.',
+      'جذور عرضية (Crown roots): تنشأ من العقد السفلى للساق تحت سطح الأرض (على بعد 2-3 سم من السطح) وتخرج في محيطات.',
+      'جذور دعامية (Aerial roots): تنشأ من العقد فوق سطح الأرض، وظيفتها تدعيم النبات ومنع الرقاد وامتصاص الغذاء عند وصولها للتربة.',
+    ],
+    stem: [
+      'ساق قائمة مصمتة ممتلئة بالنخاع، مقسمة لعقد وسلاميات.',
+      'السلاميات تكون قصيرة عند القاعدة وتزداد في الطول تدريجياً نحو الأعلى.',
+    ],
+    leaves: [
+      'تخرج ورقة واحدة عند كل عقدة بترتيب متبادل في صفين.',
+      'تتكون من: نصل شريطي طويل، غمد يغلف الساق تماماً، ولسين (زائدة غشائية عند التقاء النصل بالغمد).',
+    ],
+    flowers: [
+      'نبات وحيد المسكن ثنائي الجنس (الأزهار المذكرة والمؤنثة على نفس النبات لكن منفصلة).',
+      'النورة المذكرة: (الشوشة) نورة سنبلية طرفية توجد في قمة النبات.',
+      'النورة المؤنثة: (الكوز) نورة عرنوسية (إغريضية) تخرج في إبط الأوراق.',
+    ],
+    pollination: 'خلطي بالرياح (بنسبة 95% أو أكثر) لأن النورات المذكرة تنضج قبل المؤنثة بـ 2-5 أيام.',
+    numbers: 'جذور جنينية: 4 | جذور عرضية: على عمق 2-3 سم | التلقيح الخلطي: 95%.',
+  },
+  {
+    name: 'الذرة الرفيعة',
+    emoji: '🌾',
+    sci: 'Sorghum bicolor',
+    eng: 'Grain Sorghum',
+    family: 'Gramineae (النجيلية)',
+    root: [
+      'جذر ابتدائي (جنيني): جذر واحد فقط يظهر عند الإنبات.',
+      'جذور عرضية: تنشأ من العقد السفلى للساق لتكوين المجموع الجذري الأساسي.',
+      'المميزات: مجموع جذري كثيف جداً (ضعف الذرة الشامية) مما يجعلها أكثر تحملاً للجفاف والعطش.',
+    ],
+    stem: [
+      'ساق قائمة، طولها يختلف حسب الصنف، تنتهي بسلامية طرفية طويلة تسمى (الحامل الزهري) تحمل النورة.',
+    ],
+    leaves: [
+      'يشبه نصلها نصل الذرة الشامية، لكن الغمد يحيط بالساق إحاطة تامة ويوجد لسين واضح.',
+    ],
+    flowers: [
+      'النورة دالية طرفية (عنقودية مركبة) قد تكون منضغطة أو متهدلة حسب الصنف.',
+      'السنيبلات توجد في أزواج: واحدة (جالسة خنثى) تنتج حبة، والأخرى (محمولة مذكرة أو عقيمة).',
+    ],
+    pollination: 'ذاتي غالباً (ولكن يحدث تلقيح خلطي بنسبة 5-6%).',
+    numbers: 'جذر جنيني: 1 | تلقيح خلطي: 5-6% | السنيبلات: في أزواج.',
+  },
+  {
+    name: 'القمح',
+    emoji: '🌾',
+    sci: 'Triticum aestivum',
+    eng: 'Wheat',
+    family: 'Gramineae (النجيلية)',
+    root: [
+      'جذور جنينية: تظهر عند الإنبات وتظل تعمل لفترة طويلة.',
+      'جذور عرضية (ليفية): تنشأ من عقدة التاج تحت سطح التربة عند بداية مرحلة التفريع (الإشطاء).',
+    ],
+    stem: [
+      'ساق قائمة مجوفة (قصبة) مقسمة لعقد وسلاميات، وتمتاز بالقدرة على التفريع من البراعم القاعدية.',
+    ],
+    leaves: [
+      'تتكون من غمد ونصل ولسين وأذينتان.',
+      'العلامة المميزة: أذينات القمح "متوسطة الحجم" وتوجد عليها شعيرات بسيطة.',
+    ],
+    flowers: [
+      'النورة سنبلة مركبة: تتكون من محور متعرج يحمل سنيبلات جالسة متبادلة.',
+      'كل سنيبلة تحتوي على 2-5 أزهار خنثى (عادة تنتج 2-3 حبوب).',
+    ],
+    pollination: 'ذاتي (بنسبة تزيد عن 99%).',
+    numbers: 'أزهار السنيبلة: 2-5 | التلقيح: ذاتي 99% | الساق: جوفاء.',
+  },
+  {
+    name: 'الشعير',
+    emoji: '🌾',
+    sci: 'Hordeum vulgare',
+    eng: 'Barley',
+    family: 'Gramineae (النجيلية)',
+    root: [
+      'جذور ليفية عرضية تشبه القمح لكنها تمتاز بكفاءة أعلى في امتصاص الماء من التربة الجافة.',
+    ],
+    stem: [
+      'ساق قائمة مجوفة، وتكون أقصر قليلاً من القمح في معظم الأصناف، ولونها يميل للاخضرار الباهت.',
+    ],
+    leaves: [
+      'العلامة المميزة الكبرى: "الأذينات كبيرة جداً" ملساء وتلتف حول الساق تماماً وتتقاطع.',
+    ],
+    flowers: [
+      'النورة سنبلة مركبة: يوجد عند كل عقدة من عقد المحور "ثلاث سنيبلات".',
+      'في الشعير سداسي الصفوف: الثلاث سنيبلات خصبة | في ثنائي الصفوف: السنيبلة الوسطى فقط خصبة.',
+    ],
+    pollination: 'ذاتي.',
+    numbers: 'سنيبلات العقدة: 3 | الأذينات: كبيرة جداً وملساء.',
+  },
+  {
+    name: 'الأرز',
+    emoji: '🍚',
+    sci: 'Oryza sativa',
+    eng: 'Rice',
+    family: 'Gramineae (النجيلية)',
+    root: [
+      'جذور ليفية عرضية: تنشأ من العقد السفلى، وتتركز بنسبة 80% في الـ 20 سم السطحية من التربة.',
+    ],
+    stem: [
+      'ساق قائمة مجوفة مقسمة لـ 10-14 سلامية، وتمتاز بقدرة عالية على التفريع (الإشطاء).',
+    ],
+    leaves: [
+      'نصل شريطي طويل، الغمد يغلف الساق.',
+      'العلامة المميزة: وجود لسين طويل وأذينتان صغيرتان مغطتان بشعيرات طويلة.',
+    ],
+    flowers: [
+      'النورة دالية طرفية (عنقودية مركبة) يتراوح طولها بين 14-24 سم.',
+      'السنيبلة تحتوي على زهرة واحدة خنثى تتكون من 6 أسدية ومتاع (بينما باقي النجيليات 3 أسدية).',
+    ],
+    pollination: 'ذاتي | الثمرة: برة (حبة).',
+    numbers: 'سلاميات: 10-14 | أسدية: 6 | نورة: 14-24 سم | تركيز الجذور: 80% سطحية.',
+  },
+  {
+    name: 'الفول البلدي',
+    emoji: '🫘',
+    sci: 'Vicia faba L.',
+    eng: 'Broad Bean',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي أصلي: قوي ويتعمق في التربة لمسافة تصل إلى 100 سم.',
+      'العقد البكتيرية: تنتشر على الجذور الجانبية (بكتيريا الرايزوبيوم) وتقوم بتثبيت النيتروجين الجوي.',
+    ],
+    stem: [
+      'ساق قائمة مضلعة (رباعية الأضلاع) مجوفة، طولها يتراوح من 60 إلى 150 سم.',
+      'تتميز بالقدرة على التفريع من العقد القاعدية (خلافات).',
+    ],
+    leaves: [
+      'ورقة مركبة ريشية: تتكون من 2-3 أزواج من الوريقات (بيضاوية الشكل).',
+      'ليس لها محلاق أو تنتهي بمحلاق أثري (صغير جداً غير فعال).',
+    ],
+    flowers: [
+      'النورة: عنقودية إبطية تحتوي على 2-6 أزهار.',
+      'الزهرة: فراشية بيضاء اللون، والأجنحة بها بقعة سوداء كبيرة واضحة.',
+    ],
+    pollination: 'ذاتي وخلطي (بواسطة الحشرات بنسبة تصل لـ 30%).',
+    numbers: 'عمق الجذر: 100 سم | وريقات: 4-6 | أزهار النورة: 2-6.',
+  },
+  {
+    name: 'العدس',
+    emoji: '🥣',
+    sci: 'Lens esculenta',
+    eng: 'Lentil',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي قصير نسبياً وكثير التفريع، يحمل العقد البكتيرية.',
+    ],
+    stem: [
+      'ساق عشبية ضعيفة (قائمة أو نصف قائمة)، مضلعة ورفيعة جداً.',
+      'يتراوح طولها بين 25-50 سم، وكثيرة التفريع من القاعدة.',
+    ],
+    leaves: [
+      'ورقة مركبة ريشية: تنتهي عادة بمحلاق بسيط (يساعدها على التسلق أو التماسك).',
+      'تتكون من 4-7 أزواج من الوريقات الصغيرة جداً والضيقة.',
+    ],
+    flowers: [
+      'نورات إبطية تحمل 1-4 أزهار صغيرة جداً.',
+      'لون الزهرة: أبيض، وردي، أو بنفسجي فاتح.',
+    ],
+    pollination: 'ذاتي (بنسبة 99%).',
+    numbers: 'طول الساق: 25-50 سم | أزهار النورة: 1-4 | وريقات: 8-14.',
+  },
+  {
+    name: 'الحمص',
+    emoji: '🥙',
+    sci: 'Cicer arietinum',
+    eng: 'Chick Pea',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي قوي يتعمق في التربة ويتحمل الجفاف.',
+    ],
+    stem: [
+      'ساق قائمة أسطوانية، يغطيها شعيرات غدية تفرز أحماضاً (مثل حمض الماليك).',
+      'طولها 20-50 سم، وتتفرع بكثرة من القاعدة.',
+    ],
+    leaves: [
+      'ورقة مركبة ريشية فردية: تنتهي بورقة طرفية (وليس محلاق).',
+      'حواف الوريقات "مسننة" (شبه المنشار) وهي علامة مميزة للحمص.',
+    ],
+    flowers: [
+      'أزهار فردية إبطية (تخرج زهرة واحدة في إبط الورقة).',
+      'لون الزهرة: أبيض أو أرجواني.',
+    ],
+    pollination: 'ذاتي.',
+    numbers: 'طول الساق: 20-50 سم | الحواف: مسننة | الزهرة: فردية.',
+  },
+  {
+    name: 'الحلبة',
+    emoji: '🌿',
+    sci: 'Trigonella foenum-graecum',
+    eng: 'Fenugreek',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي بسيط يحمل العقد البكتيرية.',
+    ],
+    stem: [
+      'ساق قائمة أسطوانية جوفاء، قليلة التفريع، طولها 30-60 سم.',
+    ],
+    leaves: [
+      'ورقة مركبة ريشية "ثلاثية": تتكون من 3 وريقات فقط (مثل البرسيم).',
+      'الوريقات بيضاوية مقلوبة، والحافة مسننة من جهة القمة.',
+    ],
+    flowers: [
+      'الأزهار جالسة (بدون عنق) في آباط الأوراق (واحدة أو اثنتان).',
+      'لون الزهرة: أبيض سمني أو أصفر شاحب.',
+    ],
+    pollination: 'ذاتي.',
+    numbers: 'وريقات: 3 | طول الساق: 30-60 سم.',
+  },
+  {
+    name: 'الترمس',
+    emoji: '🫘',
+    sci: 'Lupinus termis',
+    eng: 'Lupin',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي قوي جداً وسريع النمو يتعمق في التربة.',
+    ],
+    stem: [
+      'ساق قائمة خشبية عند القاعدة، قوية وسميكة، طولها 50-100 سم.',
+    ],
+    leaves: [
+      'ورقة "راحية مركبة": الوريقات تخرج من نقطة واحدة (مثل أصابع اليد).',
+      'تتكون من 7-11 وريقة طولية رمحية.',
+    ],
+    flowers: [
+      'نورة سنبلية (عنقودية) طرفية طويلة.',
+      'الزهرة كبيرة نسبياً، ولونها أبيض أو مبيض بظلال زرقاء.',
+    ],
+    pollination: 'ذاتي وخلطي (بواسطة الحشرات).',
+    numbers: 'وريقات: 7-11 | طول الساق: حتى 100 سم | نوع الورقة: راحية.',
+  },
+  
+
+  {
+    name: 'البرسيم المصري',
+    emoji: '🍀',
+    sci: 'Trifolium alexandrinum',
+    eng: 'Egyptian Clover',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي: يتعمق في التربة ويحمل العقد البكتيرية لتثبيت النيتروجين.',
+    ],
+    stem: [
+      'ساق قائمة أو نصف قائمة، جوفاء، مقسمة لعقد وسلاميات.',
+      'تتميز بالقدرة العالية على "التحميل" (إنتاج حشات متكررة) من البراعم الموجودة في إبط الأوراق القاعدية (كرسي البرسيم).',
+    ],
+    leaves: [
+      'ورقة مركبة "ثلاثية": تتكون من 3 وريقات بيضاوية مقلوبة.',
+      'توجد أذينتان ملتحمتان بالعنق عند قاعدة الورقة.',
+    ],
+    flowers: [
+      'النورة رأسية (كروية أو بيضاوية) تحتوي على أزهار فراشية صغيرة جداً.',
+      'لون الزهرة: أصفر شاحب أو مبيض.',
+    ],
+    pollination: 'خلطي بالحشرات (خاصة نحل العسل).',
+    numbers: 'وريقات: 3 | التلقيح: خلطي بالنحل.',
+  },
+  {
+    name: 'البرسيم الحجازي',
+    emoji: '🌿',
+    sci: 'Medicago sativa',
+    eng: 'Alfalfa',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي قوي جداً وشديد التعمق (يصل لعدة أمتار) مما يجعله يتحمل الجفاف الشديد.',
+    ],
+    stem: [
+      'نبات معمر (يبقى في الأرض سنوات)، سيقانه قائمة وكثيرة التفريع من القاعدة.',
+    ],
+    leaves: [
+      'ورقة مركبة "ثلاثية" ريشية: الوريقة الوسطى لها عنق أطول قليلاً من الوريقتين الجانبيتين.',
+      'حافة الوريقة مسننة في الثلث العلوي فقط.',
+    ],
+    flowers: [
+      'النورة عنقودية إبطية طويلة.',
+      'لون الزهرة: بنفسجي أو أرجواني (علامة مميزة جداً عن البرسيم المصري).',
+    ],
+    pollination: 'خلطي بالحشرات.',
+    numbers: 'طول العمر: نبات معمر | لون الزهرة: بنفسجي.',
+  },
+  {
+    name: 'القطن',
+    emoji: '☁️',
+    sci: 'Gossypium barbadense',
+    eng: 'Cotton',
+    family: 'Malvaceae (الخبازية)',
+    root: [
+      'جذر وتدي أصلي قوي يتعمق كثيراً (يصل لـ 1.5 متر)، وتخرج منه جذور جانبية في 4 صفوف رأسية.',
+    ],
+    stem: [
+      'ساق قائمة خشبية، تحمل نوعين من الأفرع: خضرية (تنمو من أسفل ببراعم صادقة المحور) وثمرية (تنمو من أعلى ببراعم كاذبة المحور وتملها الأزهار).',
+    ],
+    leaves: [
+      'ورقة بسيطة مفصصة (3-5 فصوص)، متبادلة، يوجد على العرق الوسطي غدة رحيقية (نقطة حمراء).',
+    ],
+    flowers: [
+      'الزهرة كبيرة وحيدة، يحيط بها 3 قنابات مسننة كبيرة تسمى (الكأس الخارجي).',
+      'التويج 5 بتلات لونها كريمي في الصباح وتتحول للأحمر في المساء بعد التلقيح.',
+    ],
+    pollination: 'ذاتي أساساً (ولكن يحدث خلط بالحشرات بنسبة 5-25%).',
+    numbers: 'عمق الجذر: 1.5 م | قنابات: 3 | نظام التزهير: رأسي وأفقي.',
+  },
+  {
+    name: 'الكتان',
+    emoji: '🌸',
+    sci: 'Linum usitatissimum',
+    eng: 'Flax',
+    family: 'Linaceae (الكتانية)',
+    root: [
+      'جذر وتدي بسيط وقصير قليل التفريع.',
+    ],
+    stem: [
+      'ساق أسطوانية ناعمة، في أصناف الألياف تكون طويلة وغير متفرعة إلا عند القمة.',
+    ],
+    leaves: [
+      'بسيطة صغيرة رمحية الشكل، متبادلة على الساق، عديمة الأعناق (جالسة).',
+    ],
+    flowers: [
+      'خماسية الأجزاء (5 بتلات، 5 سبلات، 5 أسدية).',
+      'لون الزهرة: أزرق (غالب أصناف الألياف) أو أبيض.',
+    ],
+    pollination: 'ذاتي بنسبة كبيرة جداً.',
+    numbers: 'الثمرة: كبسولة (علبة) بها 10 مساكن لكل مسكن بذرة واحدة.',
+  },
+  {
+    name: 'السمسم',
+    emoji: '🌻',
+    sci: 'Sesamum indicum L.',
+    eng: 'Sesame',
+    family: 'Pedaliaceae (السمسمية)',
+    root: [
+      'جذر وتدي يتعمق في التربة من 35-100 سم.',
+    ],
+    stem: [
+      'ساق قائمة مضلعة (مربعة أو ثمانية الأضلاع) مكسوة بشعيرات كثيفة.',
+    ],
+    leaves: [
+      'متبادلة، يختلف شكل الورقة على النبات (السفلية عريضة مسننة، والعلوية ضيقة كاملة الحافة).',
+    ],
+    flowers: [
+      'أزهار ناقوسية (قمعية) تخرج من إبط الأوراق، لونها مبيض أو وردي مبهت.',
+    ],
+    pollination: 'ذاتي غالباً.',
+    numbers: 'طول الساق: 50-200 سم | الثمرة: كبسولة رباعية المساكن.',
+  },
+
+  {
+    name: 'عباد الشمس',
+    emoji: '🌻',
+    sci: 'Helianthus annuus',
+    eng: 'Sunflower',
+    family: 'Compositae (المركبة)',
+    root: [
+      'جذر وتدي أصلي: قوي ومتفرع جداً، يخرج منه جذور جانبية كثيرة تتركز في الطبقة السطحية.',
+    ],
+    stem: [
+      'ساق قائمة أسطوانية خشنة الملمس (مغطاة بشعيرات إبرية)، يتراوح طولها بين 1-3 متر.',
+      'الساق عادة غير متفرعة وتنتهي بقرص زهري واحد كبير.',
+    ],
+    leaves: [
+      'أوراق بسيطة قلبية الشكل، كبيرة جداً، ذات حافة مسننة وعروق بارزة.',
+      'تترتب الأوراق متبادلة على الساق (ما عدا الأوراق القاعدية تكون متقابلة).',
+    ],
+    flowers: [
+      'النورة "قرصية" (هامة): تحتوي على نوعين من الأزهار:',
+      '1. أزهار شعاعية: (على الحافة) صفراء اللون، عقيمة وظيفتها جذب الحشرات.',
+      '2. أزهار قرصية: (في المركز) أزهار خنثى خصبة هي التي تعطي البذور.',
+    ],
+    pollination: 'خلطي بالحشرات (نحل العسل) لوجود ظاهرة عدم التوافق الذاتي.',
+    numbers: 'طول الساق: 1-3 متر | نوع النورة: هامة (Head).',
+  },
+  {
+    name: 'فول السوداني',
+    emoji: '🥜',
+    sci: 'Arachis hypogaea',
+    eng: 'Peanut / Groundnut',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي كثير التفريع، تتركز عليه العقد البكتيرية (الرايزوبيوم) لتثبيت النيتروجين.',
+    ],
+    stem: [
+      'ساق عشبية أسطوانية مشعرة، تختلف حسب الطراز (قائمة، مفترشة، أو نصف قائمة).',
+    ],
+    leaves: [
+      'ورقة مركبة ريشية "زوجية": تتكون من زوجين من الوريقات (4 وريقات) بيضاوية الشكل.',
+      'لا تنتهي بمحلاق ولا ورقة طرفية.',
+    ],
+    flowers: [
+      'أزهار صفراء تخرج في آباط الأوراق.',
+      'بعد الإخصاب، تستطيل قاعدة المبيض لتكون "المئبر" (Peg) الذي يتجه لأسفل ليخترق التربة وتنمو الثمرة (القرنة) داخل الأرض.',
+    ],
+    pollination: 'ذاتي (بنسبة 99%).',
+    numbers: 'وريقات: 4 | التلقيح: ذاتي | الثمار: تتكون تحت سطح التربة.',
+  },
+  {
+    name: 'قصب السكر',
+    emoji: '🎋',
+    sci: 'Saccharum officinarum',
+    eng: 'Sugar Cane',
+    family: 'Gramineae (النجيلية)',
+    root: [
+      'جذور عرضية ليفية: تنشأ من عقد العقلة المنزرعة.',
+      'تتكون لاحقاً جذور من عقد الساق تحت سطح الأرض لتثبيت النبات وامتصاص الماء.',
+    ],
+    stem: [
+      'ساق قائمة مصمتة، مقسمة لعقد وسلاميات واضحة جداً، وهي الجزء الذي يخزن السكر.',
+      'يوجد عند كل عقدة "برعم" (عين) ومنطقة الشريط الجذري.',
+    ],
+    leaves: [
+      'ورقة نجيلية (غمد ونصل ولسين)، النصل طويل ذو حافة حادة (منشارية أحياناً).',
+    ],
+    flowers: [
+      'النورة دالية طرفية تسمى "السهم" (Arrow)، وهي نورة عنقودية كبيرة فضية اللون.',
+    ],
+    pollination: 'خلطي بالرياح (نادراً ما يزهر في مصر).',
+    numbers: 'يتكاثر خضرياً بـ "العقل" وليس بالبذور في الزراعة الإنتاجية.',
+  },
+  {
+    name: 'بنجر السكر',
+    emoji: '🫚',
+    sci: 'Beta vulgaris',
+    eng: 'Sugar Beet',
+    family: 'Chenopodiaceae (الرمرامية)',
+    root: [
+      'جذر وتدي متضخم مغزلي الشكل، يتكون من: التاج، العنق، والجذر الحقيقي.',
+      'منطقة "الجذر الحقيقي" هي التي تحتوي على أعلى نسبة سكر.',
+    ],
+    stem: [
+      'السنة الأولى: الساق قرصية (التاج) تحمل الأوراق.',
+      'السنة الثانية: يخرج الحامل الزهري بطول 1-2 متر.',
+    ],
+    leaves: [
+      'أوراق بسيطة عريضة قلبية أو بيضاوية ذات أعناق طويلة، تخرج في شكل وردة (روزيت).',
+    ],
+    flowers: [
+      'تظهر في السنة الثانية، صغيرة خضراء في نورات عنقودية مركبة.',
+    ],
+    pollination: 'خلطي بالرياح.',
+    numbers: 'ثنائي الحول | محصول شتوي في مصر.',
+  },
+
+  {
+    name: 'لوبيا العلف',
+    emoji: '🌿',
+    sci: 'Vigna sinensis',
+    eng: 'Cowpea',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي قوي يتعمق في التربة ويحمل العقد البكتيرية (الرايزوبيوم).',
+    ],
+    stem: [
+      'ساق عشبية متسلقة أو زاحفة أو قائمة حسب الصنف، ناعمة الملمس وكثيرة التفريع.',
+    ],
+    leaves: [
+      'ورقة مركبة "ثلاثية" (3 وريقات)، الوريقة الوسطى لها عنق أطول من الجانبيتين.',
+      'الوريقات كبيرة الحجم بيضاوية الشكل كاملة الحافة.',
+    ],
+    flowers: [
+      'نورات إبطية تحمل أزهاراً فراشية، لونها أبيض أو بنفسجي فاتح.',
+      'الثمرة: قرنة طويلة تحتوي على بذور كلوية الشكل.',
+    ],
+    pollination: 'ذاتي غالباً.',
+    numbers: 'نوع الورقة: ثلاثية | الثمرة: قرنة طويلة.',
+  },
+  {
+    name: 'الكريشينج (الكلر)',
+    emoji: '🌱',
+    sci: 'Lathyrus sativus',
+    eng: 'Grass Pea',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي يحمل عقد بكتيرية لتثبيت النيتروجين.',
+    ],
+    stem: [
+      'ساق عشبية مضلعة ومجنحة (لها حواف تشبه الأجنحة) وهي علامة مميزة.',
+    ],
+    leaves: [
+      'ورقة ريشية مركبة تتكون من زوج واحد من الوريقات (ورقتين فقط).',
+      'تنتهي الورقة بـ "محلاق" يساعد النبات على التسلق.',
+    ],
+    flowers: [
+      'أزهار فردية تخرج من آباط الأوراق، لونها أزرق أو أبيض.',
+    ],
+    pollination: 'ذاتي.',
+    numbers: 'عدد الوريقات: 2 | الساق: مجنحة | تنتهي بمحلاق.',
+  },
+  {
+    name: 'حشيشة السودان',
+    emoji: '🌾',
+    sci: 'Sorghum sudanense',
+    eng: 'Sudan Grass',
+    family: 'Gramineae (النجيلية)',
+    root: [
+      'جذور ليفية عرضية قوية ومنتشرة.',
+    ],
+    stem: [
+      'ساق رفيعة جداً مقارنة بالذرة الرفيعة، طولها 2-3 متر، وتتميز بقدرة عالية جداً على التفريع القاعدي (إعطاء خلفات كثيرة بعد الحش).',
+    ],
+    leaves: [
+      'أوراق نجيلية شريطية أرفع من أوراق الذرة الرفيعة.',
+    ],
+    flowers: [
+      'النورة دالية (مفتوحة) ومنتشرة جداً تحتوي على سنيبلات صغيرة.',
+    ],
+    pollination: 'خلطي بالرياح غالباً.',
+    numbers: 'عدد الحشات: تعطي 3-4 حشات في الموسم | الساق: رفيعة جداً.',
+  },
+  {
+    name: 'الدخن',
+    emoji: '🌾',
+    sci: 'Pennisetum glaucum',
+    eng: 'Pearl Millet',
+    family: 'Gramineae (النجيلية)',
+    root: [
+      'مجموع جذري ليفي قوي جداً يتعمق في التربة، مما يجعله المحصول الأكثر تحملاً للجفاف والحرارة والملوحة.',
+    ],
+    stem: [
+      'ساق قائمة مصمتة يتراوح طولها بين 1-2.5 متر، وتخرج منها أفرع من العقد السفلى.',
+    ],
+    leaves: [
+      'أوراق شريطية طويلة يغطيها شعيرات خشنة (أحياناً) لتقليل النتح.',
+    ],
+    flowers: [
+      'النورة "سنبلة كاذبة" (Spike-like) تشبه "السيجار" أو "ذيل القط"، وتكون مدمجة جداً وطويلة (تصل لـ 30 سم).',
+    ],
+    pollination: 'خلطي (بروتوجيني: المتاع ينضج قبل الأسدية).',
+    numbers: 'طول النورة: حتى 30 سم | شكل النورة: أسطواني مدمج (سيجار).',
+  },
+  {
+    name: 'علف الفيل (حشيشة النابير)',
+    emoji: '🐘',
+    sci: 'Pennisetum purpureum',
+    eng: 'Elephant Grass / Napier Grass',
+    family: 'Gramineae (النجيلية)',
+    root: [
+      'جذور ليفية قوية جداً تمتد عميقاً في التربة.',
+    ],
+    stem: [
+      'ساق سميكة جداً تشبه قصب السكر، طولها قد يصل إلى 4-5 أمتار.',
+      'نبات معمر يمكث في الأرض عدة سنوات ويخرج كمية كبيرة من السيقان.',
+    ],
+    leaves: [
+      'أوراق طويلة جداً وعريضة، ذات عرق وسطي بارز وحواف حادة (جارحة).',
+    ],
+    flowers: [
+      'نورة سنبلية تشبه نورة الدخن لكنها أقل اندماجاً، ونادراً ما يزهر في مصر لأنه يتكاثر خضرياً.',
+    ],
+    pollination: 'لا يعتمد عليه لأنه يتكاثر بالعقل خضرياً.',
+    numbers: 'ارتفاع النبات: حتى 5 أمتار | التكاثر: خضري بالعقل (مثل القصب).',
+  },
+  
+  {
+    name: 'التيل',
+    emoji: '🌿',
+    sci: 'Hibiscus cannabinus',
+    eng: 'Kenaf',
+    family: 'Malvaceae (الخبازية)',
+    root: [
+      'جذر وتدي قوي ومنتشر.',
+    ],
+    stem: [
+      'ساق قائمة أسطوانية، قد تكون ملساء أو مغطاة بأشواك صغيرة حسب الصنف.',
+      'يتراوح طولها بين 1.5-4 متر، وتتميز بأليافها التي توجد في طبقة اللحاء.',
+    ],
+    leaves: [
+      'بسيطة، متبادلة، وتختلف في شكلها (فصوص عميقة في الأوراق العلوية وبيضاوية في السفلية).',
+    ],
+    flowers: [
+      'أزهار وحيدة إبطية، كبيرة الحجم، لونها أصفر أو كريمي مع مركز قرمزي (أحمر داكن).',
+    ],
+    pollination: 'ذاتي غالباً.',
+    numbers: 'طول الساق: 1.5-4 متر | العائلة: الخبازية (مثل القطن).',
+  },
+  {
+    name: 'الجوت',
+    emoji: '🌱',
+    sci: 'Corchorus olitorius',
+    eng: 'Jute',
+    family: 'Tiliaceae (التيليّة)',
+    root: [
+      'جذر وتدي متعمق.',
+    ],
+    stem: [
+      'ساق أسطوانية ناعمة خضراء أو محمرة، طولها من 1-4 متر، وتتفرع عند القمة فقط.',
+    ],
+    leaves: [
+      'بسيطة بيضاوية رمحية، حافتها مسننة، وتتميز بوجود "زائدتين خيطيتين" عند قاعدة النصل.',
+    ],
+    flowers: [
+      'أزهار صغيرة صفراء اللون تخرج في مجموعات إبطية.',
+    ],
+    pollination: 'ذاتي.',
+    numbers: 'طول الساق: 1-4 متر | الميزة: زائدتان خيطيتان في قاعدة الورقة.',
+  },
+  {
+    name: 'الرامي',
+    emoji: '🌿',
+    sci: 'Boehmeria nivea',
+    eng: 'Ramie',
+    family: 'Urticaceae (القراصية)',
+    root: [
+      'يتميز بوجود جذور "ريزومية" مخزنة، وهو نبات معمر.',
+    ],
+    stem: [
+      'سيقان قائمة عديدة تخرج من الريزومات الأرضية، طولها 1-2.5 متر.',
+    ],
+    leaves: [
+      'قلبية الشكل، متبادلة، السطح السفلي للورقة يتميز بلون أبيض فضي (بسبب وجود شعيرات كثيفة).',
+    ],
+    flowers: [
+      'أزهار صغيرة جداً خضراء اللون محمولة في نورات عنقودية إبطية، والنبات وحيد المسكن.',
+    ],
+    pollination: 'بالرياح.',
+    numbers: 'نوع النبات: معمر | لون الورقة السفلي: أبيض فضي.',
+  },
+  {
+    name: 'السيزال',
+    emoji: '🌵',
+    sci: 'Agave sisalana',
+    eng: 'Sisal',
+    family: 'Agavaceae (السيزالية / الأجاف)',
+    root: [
+      'جذور ليفية عرضية تنشأ من الساق الأرضية.',
+    ],
+    stem: [
+      'ساق أرضية قصيرة جداً وسميكة، تخرج منها الأوراق مباشرة في شكل روزيت.',
+    ],
+    leaves: [
+      'أوراق عصارية سميكة جداً، خنجرية الشكل، طولها 1-1.5 متر، وتنتهي بشوكة سوداء قوية.',
+      'الألياف مستخرجة من الأوراق (ألياف ورقية) وليس من الساق.',
+    ],
+    flowers: [
+      'يزهر مرة واحدة في نهاية عمره (بعد 7-10 سنوات)، ويخرج حامل زهري ضخم يصل طوله لـ 6 أمتار.',
+    ],
+    pollination: 'خلطي بالحشرات أو الطيور.',
+    numbers: 'طول الورقة: 1-1.5 متر | عمر النبات: 7-12 سنة.',
+  },
+  {
+    name: 'القرطم',
+    emoji: '🌼',
+    sci: 'Carthamus tinctorius',
+    eng: 'Safflower',
+    family: 'Compositae (المركبة)',
+    root: [
+      'جذر وتدي قوي يتعمق كثيراً في التربة.',
+    ],
+    stem: [
+      'ساق قائمة أسطوانية، بيضاء اللون أو مبيضة، تتفرع عند القمة.',
+    ],
+    leaves: [
+      'بسيطة، جالسة (ليس لها عنق)، بيضاوية مستطيلة، حافتها مسننة وتنتهي بأشواك حادة.',
+    ],
+    flowers: [
+      'النورة "هامة" (قرصية) يحيط بها قنابات شوكية، لون الأزهار أصفر أو برتقالي أو أحمر.',
+    ],
+    pollination: 'ذاتي وخلطي بالحشرات.',
+    numbers: 'الاستخدام: بذور للزيت وأزهار للصبغة (العصفر).',
+  },
+  {
+    name: 'فول الصويا',
+    emoji: '🫘',
+    sci: 'Glycine max',
+    eng: 'Soybean',
+    family: 'Leguminosae (البقولية)',
+    root: [
+      'جذر وتدي عليه عقد بكتيرية متخصصة (Rhizobium japonicum).',
+    ],
+    stem: [
+      'ساق قائمة أو نصف قائمة، مغطاة بشعيرات كثيفة جداً بنية أو رمادية.',
+    ],
+    leaves: [
+      'ورقة مركبة "ثلاثية" (3 وريقات)، مغطاة أيضاً بشعيرات.',
+    ],
+    flowers: [
+      'أزهار صغيرة تخرج في مجموعات إبطية، لونها أبيض أو بنفسجي.',
+      'الثمرة: قرنة صغيرة مشعرة تحتوي على 2-4 بذور.',
+    ],
+    pollination: 'ذاتي.',
+    numbers: 'محتوى البذرة: بروتين (40%) وزيت (20%).',
+  },
+  {
+    name: 'الخروع',
+    emoji: '🌳',
+    sci: 'Ricinus communis',
+    eng: 'Castor bean',
+    family: 'Euphorbiaceae (الفربيونية)',
+    root: [
+      'جذر وتدي قوي جداً ومتفرع.',
+    ],
+    stem: [
+      'ساق خشبية، قد يكون لونها أخضر أو محمر، ملساء ومغطاة بطبقة شمعية.',
+    ],
+    leaves: [
+      'ورقة بسيطة "راحية فصية" كبيرة جداً، ذات عنق طويل، ومقسمة لـ 7-11 فصاً.',
+    ],
+    flowers: [
+      'النورة عنقودية طرفية؛ الأزهار المؤنثة في الأعلى والمذكرة في الأسفل.',
+      'الثمرة: كبسولة (علبة) مغطاة بأشواك مرنة، والبذرة تشبه الحشرة (القراد).',
+    ],
+    pollination: 'خلطي بالرياح.',
+    numbers: 'الورقة: 7-11 فص | السمية: بذور تحتوي على مادة الريسين السامة.',
+  }
+  ];
+
+
+
+
+
+
+
+
+// ==================== LOGIN ====================
+function handleLogin() {
+  const name = document.getElementById('nameInput').value.trim();
+  const phone = document.getElementById('phoneInput').value.trim();
+  if (!name || !phone) {
+    alert('من فضلك أدخل الاسم ورقم الهاتف');
+    return;
+  }
+  if (phone.length < 10) {
+    alert('رقم الهاتف غير صحيح');
+    return;
+  }
+
+  // Save user
+  const user = { name, phone, loginTime: new Date().toISOString() };
+  localStorage.setItem('cropUser', JSON.stringify(user));
+
+  // Send to Gmail via Web3Forms
+  sendNotification(user);
+  enterApp(user);
+}
+
+async function sendNotification(user) {
+  try {
+    const fd = new FormData();
+    fd.append('access_key', 'abe98334-05c2-4a23-9f40-bf8f1781559e');
+    fd.append('subject', 'مستخدم جديد — موقع إنتاج المحاصيل');
+    fd.append('from_name', 'موقع إنتاج المحاصيل');
+    fd.append('name', user.name);
+    fd.append('email', 'yi069312@gmail.com');
+    fd.append('message', `مستخدم جديد سجّل دخوله:\nالاسم: ${user.name}\nالهاتف: ${user.phone}\nالوقت: ${new Date().toLocaleString('ar-EG')}`);
+    await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+  } catch(e) { /* silent */ }
+}
+
+function enterApp(user) {
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('appScreen').classList.add('active');
+  document.getElementById('userDisplay').textContent = '👤 ' + user.name.split(' ')[0];
+  buildCrops();
+}
+
+function logout() {
+  if (confirm('هتخرج من الموقع؟')) {
+    localStorage.removeItem('cropUser');
+    document.getElementById('appScreen').classList.remove('active');
+    document.getElementById('loginScreen').classList.add('active');
+  }
+}
+
+// Check if already logged in
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('cropUser');
+  if (saved) {
+    const user = JSON.parse(saved);
+    enterApp(user);
+  }
+});
+
+// ==================== NAVIGATION ====================
+function showPage(pageId, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Back button handling
+let pageHistory = ['studyPage'];
+window.addEventListener('popstate', (e) => {
+  const tabs = document.querySelectorAll('.nav-tab');
+  const pages = ['studyPage','quizPage','tfPage'];
+  const currentPage = [...document.querySelectorAll('.page')].find(p => p.classList.contains('active'));
+  if (currentPage && currentPage.id !== 'studyPage') {
+    history.pushState(null, '');
+    const idx = pages.indexOf(currentPage.id);
+    const prevIdx = Math.max(0, idx - 1);
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(pages[0]).classList.add('active');
+    tabs[0].classList.add('active');
+  }
+});
+history.pushState(null, '');
+
+// ==================== BUILD STUDY CARDS ====================
+function buildCrops() {
+  const grid = document.getElementById('cropsGrid');
+  grid.innerHTML = '';
+  CROPS.forEach((crop, i) => {
+    const card = document.createElement('div');
+    card.className = 'crop-card';
+    card.style.animationDelay = (i * 0.05) + 's';
+    card.innerHTML = `
+      <div class="crop-header">
+        <span class="crop-emoji">${crop.emoji}</span>
+        <div class="crop-title">
+          <h3>${crop.name}</h3>
+          <div class="sci-name">${crop.sci}</div>
+          <div class="eng-name">${crop.eng}</div>
+        </div>
+      </div>
+      <div class="crop-body">
+        <div class="family-badge">🏷️ ${crop.family}</div>
+        ${section('🌱 الجذر', crop.root)}
+        ${section('🌿 الساق', crop.stem)}
+        ${section('🍃 الأوراق', crop.leaves)}
+        ${section('🌸 الأزهار (النورة)', crop.flowers)}
+        <div class="info-section">
+          <h4>💛 التلقيح</h4>
+          <ul><li>${crop.pollination}</li></ul>
+        </div>
+        <div class="info-section">
+          <h4>🔢 أرقام مهمة</h4>
+          <ul><li>${crop.numbers}</li></ul>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function section(title, items) {
+  return `<div class="info-section"><h4>${title}</h4><ul>${items.map(i => `<li>${i}</li>`).join('')}</ul></div>`;
+}
+
+// ==================== BUILD TABLE ====================
+function buildTable() {
+  const table = document.getElementById('compTable');
+  const cols = ['النبات', 'الجذر', 'الساق', 'الأوراق', 'الأزهار/النورة', 'التلقيح', 'الاسم العلمي', 'العائلة', 'الاسم الإنجليزي', 'أرقام مهمة'];
+  table.innerHTML = `<thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr></thead>`;
+  const tbody = document.createElement('tbody');
+  CROPS.forEach(crop => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><div class="crop-name-cell"><span class="ar">${crop.emoji} ${crop.name}</span></div></td>
+      <td style="text-align:right">${crop.root.slice(0,2).join('<br>')}</td>
+      <td style="text-align:right">${crop.stem.slice(0,2).join('<br>')}</td>
+      <td style="text-align:right">${crop.leaves.slice(0,2).join('<br>')}</td>
+      <td style="text-align:right">${crop.flowers.slice(0,2).join('<br>')}</td>
+      <td>${crop.pollination}</td>
+      <td><em style="font-size:11px">${crop.sci}</em></td>
+      <td>${crop.family}</td>
+      <td style="font-size:11px">${crop.eng}</td>
+      <td style="text-align:right;font-size:11px">${crop.numbers}</td>`;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+}
+
+// ==================== QUIZ DATA ====================
+const QUESTIONS = [
+  // --- محاصيل الحبوب ---
+  { 
+    q: 'ما هو الاسم العلمي للذرة الشامية؟', 
+    opts: ['Zea mays', 'Sorghum bicolor', 'Triticum aestivum', 'Oryza sativa'], 
+    ans: 0, 
+    exp: 'الاسم العلمي للذرة الشامية هو Zea mays وتنتمي للعائلة النجيلية Gramineae.' 
+  },
+  { 
+    q: 'كم عدد أنواع الجذور في الذرة الشامية؟', 
+    opts: ['نوعان', 'ثلاثة أنواع', 'أربعة أنواع', 'نوع واحد'], 
+    ans: 1, 
+    exp: 'للذرة الشامية 3 أنواع من الجذور: جنينية (4 جذور)، وعرضية (ليفية)، وهوائية (دعامية).' 
+  },
+  { 
+    q: 'ما وظيفة الجذور الهوائية في الذرة الشامية؟', 
+    opts: ['امتصاص الماء فقط', 'تثبيت النبات ومنع الرقاد', 'تكوين الجذور الجانبية', 'التكاثر الخضري'], 
+    ans: 1, 
+    exp: 'تنشأ من العقد فوق سطح الأرض لتدعيم الساق ومنع النبات من السقوط (الرقاد).' 
+  },
+  { 
+    q: 'ما هو الاسم العلمي للذرة الرفيعة؟', 
+    opts: ['Zea mays', 'Sorghum bicolor', 'Triticum aestivum', 'Oryza sativa'], 
+    ans: 1, 
+    exp: 'الاسم العلمي للذرة الرفيعة هو Sorghum bicolor.' 
+  },
+  { 
+    q: 'ما عدد الجذور الجنينية في حبة القمح؟', 
+    opts: ['جذر واحد', '3 جذور', '5 جذور', '7 جذور'], 
+    ans: 2, 
+    exp: 'يخرج من حبة القمح عند الإنبات 5 جذور جنينية.' 
+  },
+  { 
+    q: 'ما العلامة المورفولوجية المميزة لأذينات الشعير؟', 
+    opts: ['صغيرة جداً', 'متوسطة وعليها شعيرات', 'كبيرة جداً وتلتف حول الساق', 'عديمة الأذينات'], 
+    ans: 2, 
+    exp: 'يتميز الشعير بأذينات كبيرة ملساء تلتف حول الساق وتتقاطع، وهي أكبر من أذينات القمح.' 
+  },
+  { 
+    q: 'كم عدد الأسدية في زهرة نبات الأرز؟', 
+    opts: ['3 أسدية', '6 أسدية', '9 أسدية', 'أسدية عديدة'], 
+    ans: 1, 
+    exp: 'يتميز الأرز بوجود 6 أسدية في الزهرة، وهو استثناء عن باقي النجيليات التي تمتلك 3 فقط.' 
+  },
+
+  // --- محاصيل البقول ---
+  { 
+    q: 'ما هو الاسم العلمي للفول البلدي؟', 
+    opts: ['Lens esculenta', 'Vicia faba', 'Cicer arietinum', 'Glycine max'], 
+    ans: 1, 
+    exp: 'الاسم العلمي للفول البلدي هو Vicia faba وينتمي للعائلة البقولية.' 
+  },
+  { 
+    q: 'ورقة نبات الترمس تعتبر ورقة:', 
+    opts: ['مركبة ريشية فردية', 'مركبة ثلاثية', 'مركبة راحية', 'بسيطة قلبية'], 
+    ans: 2, 
+    exp: 'تخرج وريقات الترمس من نقطة واحدة تشبه راحة اليد، لذا تسمى مركبة راحية.' 
+  },
+  { 
+    q: 'أي من المحاصيل التالية يمتلك "ساقاً مجنحة"؟', 
+    opts: ['العدس', 'الحلبة', 'الكريشينج (الكلر)', 'لوبيا العلف'], 
+    ans: 2, 
+    exp: 'الكريشينج يمتاز بساق مضلعة لها زوائد تشبه الأجنحة.' 
+  },
+
+  // --- محاصيل الألياف ---
+  { 
+    q: 'ما هو الاسم العلمي للقطن المصري؟', 
+    opts: ['Gossypium hirsutum', 'Gossypium barbadense', 'Linum usitatissimum', 'Agave sisalana'], 
+    ans: 1, 
+    exp: 'القطن المصري طويل التيلة هو Gossypium barbadense.' 
+  },
+  { 
+    q: 'أي محصول تستخرج أليافه من الأوراق؟', 
+    opts: ['الكتان', 'الجوت', 'السيزال', 'التيل'], 
+    ans: 2, 
+    exp: 'السيزال محصول ألياف ورقية، بينما الكتان والجوت ألياف لحائية (ساقية).' 
+  },
+  { 
+    q: 'ما هي العلامة المميزة لورقة الجوت؟', 
+    opts: ['وجود شعيرات فضية', 'وجود زائدتين خيطيتين عند القاعدة', 'ورقة عصارية', 'ورقة راحية فصية'], 
+    ans: 1, 
+    exp: 'تتميز ورقة الجوت بوجود زائدتين خيطيتين عند قاعدة نصل الورقة.' 
+  },
+  { 
+    q: 'ما هو المحصول الذي يتميز بسطح ورقة سفلي ذو لون أبيض فضي؟', 
+    opts: ['التيل', 'الرامي', 'الكتان', 'القطن'], 
+    ans: 1, 
+    exp: 'نبات الرامي (Boehmeria nivea) يتميز بوجود شعيرات كثيفة تعطي اللون الفضي أسفل الورقة.' 
+  },
+
+  // --- محاصيل الزيت والسكر ---
+  { 
+    q: 'ما هو الاسم العلمي لعباد الشمس؟', 
+    opts: ['Sesamum indicum', 'Helianthus annuus', 'Arachis hypogaea', 'Carthamus tinctorius'], 
+    ans: 1, 
+    exp: 'الاسم العلمي لعباد الشمس هو Helianthus annuus وعائلته المركبة Compositae.' 
+  },
+  { 
+    q: 'أين تتكون ثمار (قرنات) الفول السوداني؟', 
+    opts: ['على الأفرع الجانبية', 'تحت سطح التربة', 'في قمة النبات', 'في آباط الأوراق'], 
+    ans: 1, 
+    exp: 'ينمو المئبر ليدفع المبيض المخصب تحت سطح التربة لتنضج الثمرة.' 
+  },
+  { 
+    q: 'ما هو الوصف الصحيح لورقة نبات الخروع؟', 
+    opts: ['بسيطة قلبية', 'مركبة ريشية', 'بسيطة راحية فصية', 'مركبة ثلاثية'], 
+    ans: 2, 
+    exp: 'ورقة الخروع بسيطة مقسمة لـ 7-11 فصاً تشبه كف اليد.' 
+  },
+  { 
+    q: 'بنجر السكر يعتبر نبات:', 
+    opts: ['حولي', 'ثنائي الحول', 'معمر', 'صيفي'], 
+    ans: 1, 
+    exp: 'البنجر ثنائي الحول؛ ينمو خضرياً ويخزن السكر في العام الأول، ويزهر في العام الثاني.' 
+  },
+  { 
+    q: 'ما هي العائلة التي ينتمي إليها محصول السمسم؟', 
+    opts: ['Pedaliaceae', 'Linaceae', 'Compositae', 'Malvaceae'], 
+    ans: 0, 
+    exp: 'السمسم ينتمي للعائلة السمسمية Pedaliaceae.' 
+  },
+  { 
+    q: 'ما نوع نورة قصب السكر؟', 
+    opts: ['سنبلة مركبة', 'عرنوسية', 'دالية طرفية (السهم)', 'هامة'], 
+    ans: 2, 
+    exp: 'نورة قصب السكر دالية كبيرة فضية اللون تسمى السهم (Arrow).' 
+  },
+  { 
+    q: 'ما هو عدد الجذور الجنينية التي تخرج عند إنبات حبة الذرة الشامية؟', 
+    opts: ['جذر واحد', '3 جذور', '4 جذور', '8 جذور'], 
+    ans: 2, 
+    exp: 'يبدأ الجذير بالنمو ثم تتبعه جذور أخرى حتى يصل العدد إلى 4 جذور جنينية.' 
+  },
+  { 
+    q: 'من أين تنشأ الجذور العرضية في نبات الذرة الشامية؟', 
+    opts: ['من الحبة مباشرة', 'من العقد السفلى للساق تحت سطح الأرض', 'من النورة المذكرة', 'من قاعدة الأوراق'], 
+    ans: 1, 
+    exp: 'تنشأ الجذور العرضية من العقد السفلى للساق وتخرج على بعد 2-3 سم من سطح التربة.' 
+  },
+  { 
+    q: 'ما هي العائلة النباتية التي ينتمي إليها محصول الخروع؟', 
+    opts: ['العائلة النجيلية', 'العائلة البقولية', 'العائلة الفربيونية (Euphorbiaceae)', 'العائلة الخبازية'], 
+    ans: 2, 
+    exp: 'الخروع (Ricinus communis) هو أحد أهم المحاصيل الزيتية في العائلة الفربيونية.' 
+  },
+  { 
+    q: 'تتميز ورقة بنجر السكر بأنها ورقة:', 
+    opts: ['بسيطة معنقة مرتبة في روزيت (وردية)', 'مركبة ريشية', 'مركبة راحية', 'شريطية جالسة'], 
+    ans: 0, 
+    exp: 'تخرج أوراق البنجر من التاج في ترتيب دائري (وردية) في السنة الأولى من عمر النبات.' 
+  },
+  { 
+    q: 'ما هو الاسم العلمي للقرطم (القطيفة)؟', 
+    opts: ['Helianthus annuus', 'Carthamus tinctorius', 'Linum usitatissimum', 'Sesamum indicum'], 
+    ans: 1, 
+    exp: 'الاسم العلمي للقرطم هو Carthamus tinctorius وينتمي للعائلة المركبة.' 
+  },
+  { 
+    q: 'نورة نبات البرسيم المصري تعتبر نورة:', 
+    opts: ['دالية منتشرة', 'سنبلية مركبة', 'هامة مدمجة كروية أو مستطيلة', 'عرنوسية'], 
+    ans: 2, 
+    exp: 'تتجمع أزهار البرسيم في رؤوس (هامة) مدمجة، وتلقيحها خلطي بنحل العسل.' 
+  },
+  { 
+    q: 'ما هي السمة المميزة لورقة نبات الجوت؟', 
+    opts: ['وجود شعيرات فضية', 'وجود زائدتين خيطيتين عند قاعدة النصل', 'أنها ورقة عصارية خنجرية', 'أنها مركبة ثلاثية'], 
+    ans: 1, 
+    exp: 'ورقة الجوت بسيطة بيضاوية وتتميز بوجود زائدتين خيطيتين طويلتين عند القاعدة.' 
+  },
+  { 
+    q: 'نبات الرامي (Boehmeria nivea) يتميز بوجود:', 
+    opts: ['أشواك على الساق', 'شعيرات كثيفة بيضاء فضية أسفل الورقة', 'ساق زاحفة', 'أزهار كبيرة صفراء'], 
+    ans: 1, 
+    exp: 'الجزء السفلي من ورقة الرامي مغطى بشعيرات تعطيها لوناً أبيض فضياً مميزاً.' 
+  },
+  { 
+    q: 'أين تتركز أعلى نسبة سكر في جذر بنجر السكر؟', 
+    opts: ['منطقة التاج', 'منطقة العنق', 'منطقة الجسم (الجذر الحقيقي)', 'منطقة الذيل'], 
+    ans: 2, 
+    exp: 'منطقة الجسم هي المخزن الرئيسي للسكر، بينما التاج يحتوي على أقل نسبة وأعلى شوائب.' 
+  },
+  { 
+    q: 'تعتبر نورة الذرة الرفيعة نورة:', 
+    opts: ['دالية مدمجة أو منبسطة (قنديل)', 'عرنوسية (كوز)', 'سنبلة بسيطة', 'وحيدة إبطية'], 
+    ans: 0, 
+    exp: 'نورة الذرة الرفيعة دالية وتوجد في قمة الساق وتسمى قنديل أو شوشة.' 
+  },
+  { 
+    q: 'ما هو نوع الورقة في نبات الفول السوداني؟', 
+    opts: ['مركبة ريشية زوجية (وريقتان)', 'مركبة ريشية زوجية (زوجان من الوريقات)', 'مركبة ثلاثية', 'بسيطة'], 
+    ans: 1, 
+    exp: 'ورقة الفول السوداني مركبة ريشية تنتهي بزوج من الوريقات (لا يوجد وريقة طرفية).' 
+  },
+  { 
+    q: 'العلامة الفارقة بين أذينات القمح والشعير هي:', 
+    opts: ['أذينات القمح أكبر', 'أذينات الشعير كبيرة جداً وتلتف حول الساق', 'القمح ليس له أذينات', 'أذينات الشعير عليها شعيرات'], 
+    ans: 1, 
+    exp: 'أذينات الشعير كبيرة وملساء وتلتف حول الساق، بينما القمح متوسطة وعليها شعيرات.' 
+  },
+  { 
+    q: 'ما هو الاسم العلمي لنبات التيل؟', 
+    opts: ['Hibiscus cannabinus', 'Gossypium barbadense', 'Corchorus capsularis', 'Linum'], 
+    ans: 0, 
+    exp: 'التيل يتبع العائلة الخبازية واسمه العلمي Hibiscus cannabinus.' 
+  },
+  { 
+    q: 'نبات السيزال يستخرج منه ألياف:', 
+    opts: ['لحائية (من الساق)', 'بذرية (من البذور)', 'ورقية (من الأوراق)', 'جذرية'], 
+    ans: 2, 
+    exp: 'السيزال هو المحصول الوحيد في المنهج الذي تستخرج أليافه من الأوراق العصارية.' 
+  },
+  { 
+    q: 'كم عدد الأسدية في زهرة نبات القمح؟', 
+    opts: ['سداة واحدة', '3 أسدية', '6 أسدية', '10 أسدية'], 
+    ans: 1, 
+    exp: 'معظم العائلة النجيلية (ومنها القمح) تمتلك 3 أسدية، باستثناء الأرز الذي يمتلك 6.' 
+  },
+  { 
+    q: 'ما هو الموطن الأصلي لنبات بنجر السكر؟', 
+    opts: ['المناطق المدارية', 'منطقة البحر الأبيض المتوسط وأوروبا', 'شرق آسيا', 'أمريكا الجنوبية'], 
+    ans: 1, 
+    exp: 'البنجر نشأ في المناطق المعتدلة والباردة في أوروبا وحوض المتوسط.' 
+  },
+  { 
+    q: 'في نبات عباد الشمس، تسمى النورة:', 
+    opts: ['عرنوس', 'هامة (قرصية)', 'دالية', 'سنبلة'], 
+    ans: 1, 
+    exp: 'نورة عباد الشمس "هامة" تضم نوعين من الأزهار: شعاعية (عقيمة) وقرصية (خصبة).' 
+  },
+  { 
+    q: 'محصول "الكريشينج" يتبع العائلة:', 
+    opts: ['النجيلية', 'البقولية', 'الرمرامية', 'المركبة'], 
+    ans: 1, 
+    exp: 'الكريشينج محصول بقولي علفي هام.' 
+  },
+  { 
+    q: 'نبات الكتان المزروع من أجل الألياف يتميز بـ:', 
+    opts: ['ساق قصيرة وكثيرة التفريع', 'ساق طويلة وغير متفرعة إلا عند القمة', 'أوراق عريضة جداً', 'جذر ليفي'], 
+    ans: 1, 
+    exp: 'للحصول على ألياف طويلة جيدة، يفضل ألا تتفرع الساق إلا في نهايتها عند النورة.' 
+  },
+  { 
+    q: 'ما هو الاسم العلمي لنبات الجوت الكبسولي؟', 
+    opts: ['Corchorus capsularis', 'Corchorus olitorius', 'Boehmeria nivea', 'Agave'], 
+    ans: 0, 
+    exp: 'الجوت الكبسولي (ثمرته كبسولة) هو Corchorus capsularis.' 
+  },
+  { 
+    q: 'الاسم العلمي للبرسيم المصري هو:', 
+    opts: ['Medicago sativa', 'Trifolium alexandrinum', 'Vicia faba', 'Lupinus'], 
+    ans: 1, 
+    exp: 'Trifolium alexandrinum هو الاسم العلمي للبرسيم المصري (الربا).' 
+  },
+  { 
+    q: 'ثمار نبات السمسم هي عبارة عن:', 
+    opts: ['قرنة', 'كبسولة (علبة)', 'حبة', 'برة'], 
+    ans: 1, 
+    exp: 'ثمرة السمسم علبة (Capsule) طولية تحتوي على بذور صغيرة.' 
+  },
+  { 
+    q: 'يتميز ساق نبات الحمص بأنه:', 
+    opts: ['أملس تماماً', 'مغطى بشعيرات غدية تفرز أحماضاً', 'ساق زاحفة', 'ساق جوفاء'], 
+    ans: 1, 
+    exp: 'ساق وأوراق الحمص مغطاة بشعيرات تفرز أحماضاً (مثل حمض الماليك) تعطي طعماً لاذعاً.' 
+  },
+  { 
+    q: 'ما هو عدد الوريقات في ورقة نبات البرسيم الحجازي؟', 
+    opts: ['وريقة واحدة', '3 وريقات', '5 وريقات', '7 وريقات'], 
+    ans: 1, 
+    exp: 'البرسيم الحجازي ورقتة مركبة ثلاثية (مثل البرسيم المصري).' 
+  },
+  { 
+    q: 'توجد النورة المذكرة في الذرة الشامية في:', 
+    opts: ['إبط الورقة الخامسة', 'قمة النبات', 'قاعدة النبات', 'تخرج من تحت الأرض'], 
+    ans: 1, 
+    exp: 'النورة المذكرة (الشوش) طرفية وتوجد في قمة نبات الذرة الشامية.' 
+  },
+  { 
+    q: 'محصول السيزال يتبع العائلة:', 
+    opts: ['النجيلية', 'الخبازية', 'الأماريلدية (Amaryllidaceae)', 'البقولية'], 
+    ans: 2, 
+    exp: 'السيزال يتبع العائلة الأماريلدية (أو Agavaceae في تصنيفات أخرى).' 
+  },
+  { 
+    q: 'ما هو الجزء المستخدم في استخراج السكر من قصب السكر؟', 
+    opts: ['الجذور', 'الأوراق', 'الساق (السلاميات الوسطى)', 'النورة'], 
+    ans: 2, 
+    exp: 'يخزن السكر في عصير سلاميات الساق في محصول قصب السكر.' 
+  },
+  { 
+    q: 'يتميز القمح "الديورم" (قمح المكرونة) بأنه:', 
+    opts: ['سنابلة عديمة السفا', 'سنابلة ذات سفا طويل وحبوب صلبة', 'ساقه قصيرة جداً', 'محصول صيفي'], 
+    ans: 1, 
+    exp: 'قمح الديورم يتميز بالسفا الطويل والحبوب شديدة الصلابة الغنية بالجلوتين.' 
+  },
+  { 
+    q: 'تسمى الثمرة في العائلة النجيلية (مثل القمح والذرة):', 
+    opts: ['قرنة', 'حبة (برة)', 'علبة', 'فقيرة'], 
+    ans: 1, 
+    exp: 'الثمرة حبة (Caryopsis) حيث يلتحم غلاف الثمرة مع غلاف البذرة.' 
+  },
+  { 
+    q: 'ما هو لون أزهار نبات الكتان؟', 
+    opts: ['أصفر', 'أبيض أو أزرق سماوي', 'أحمر داكن', 'بنفسجي'], 
+    ans: 1, 
+    exp: 'أزهار الكتان غالباً ما تكون زرقاء سماوية جميلة أو بيضاء في بعض الأصناف.' 
+  },
+  { 
+    q: 'تعتبر جذور نبات البرسيم الحجازي جذوراً:', 
+    opts: ['ليفية سطحية', 'وتدية متعمقة جداً', 'هوائية دائرية', 'عرضية خازنة'], 
+    ans: 1, 
+    exp: 'البرسيم الحجازي يمتلك جذراً وتدياً قوياً يصل لأعماق كبيرة مما يجعله معمراً.' 
+  },
+  { 
+    q: 'يتميز "غمد" الورقة في العائلة النجيلية بأنه:', 
+    opts: ['جزء الورقة الذي يحيط بالساق', 'النصل المنبسط', 'الزوائد الخيطية', 'البرعم الإبطي'], 
+    ans: 0, 
+    exp: 'الغمد هو الجزء القاعدي من الورقة الذي يلتف حول الساق لحمايتها.' 
+  },
+  { 
+    q: 'في نبات القطن، تسمى الثمرة:', 
+    opts: ['قرنة', 'لوزة', 'جوزة', 'حبة'], 
+    ans: 1, 
+    exp: 'ثمرة القطن كبسولة وتعرف تجارياً باسم "اللوزة".' 
+  },
+  { 
+    q: 'ما هو عدد حجرات المبيض في زهرة القطن؟', 
+    opts: ['حجرة واحدة', '3-5 حجرات', '10 حجرات', 'عديدة الحجرات'], 
+    ans: 1, 
+    exp: 'مبيض زهرة القطن يتكون من 3 إلى 5 كربلات ملتحمة (حجرات).' 
+  },
+  { 
+    q: 'نبات "حشيشة السودان" يتبع محصول:', 
+    opts: ['الذرة الشامية', 'الذرة الرفيعة', 'الأرز', 'القمح'], 
+    ans: 1, 
+    exp: 'حشيشة السودان هي نوع من أنواع الذرة الرفيعة العلفية.' 
+  },
+  { 
+    q: 'تتميز ورقة نبات عباد الشمس بأن نصلها:', 
+    opts: ['شريطي طويل', 'قلبي الشكل ذو حافة مسننة', 'مفصص بعمق', 'إبري'], 
+    ans: 1, 
+    exp: 'ورقة عباد الشمس بسيطة كبيرة قلبية الشكل وحوافها مسننة خشناً.' 
+  },
+  { 
+    q: 'ما هو الموعد المناسب لزراعة محاصيل (القمح، الفول، الكتان) في مصر؟', 
+    opts: ['الصيف (مايو)', 'الشتاء (أكتوبر ونوفمبر)', 'الربيع (مارس)', 'طوال العام'], 
+    ans: 1, 
+    exp: 'هذه محاصيل شتوية تزرع في الخريف (أكتوبر/نوفمبر) لتحصد في الربيع.' 
+  },
+  { 
+    q: 'يستخرج الزيت "الحار" من بذور نبات:', 
+    opts: ['السمسم', 'الخروع', 'الكتان', 'القطن'], 
+    ans: 2, 
+    exp: 'زيت الكتان (الزيت الحار) يستخرج من البذور ويستخدم في الغذاء والطلاء.' 
+  },
+  { 
+    q: 'ما هي العائلة التي ينتمي إليها نبات بنجر السكر؟', 
+    opts: ['النجيلية', 'الرمرامية (Chenopodiaceae)', 'البقولية', 'المركبة'], 
+    ans: 1, 
+    exp: 'بنجر السكر ينتمي للعائلة الرمرامية.' 
+  },
+  { 
+    q: 'تسمى الساق في محصول قصب السكر:', 
+    opts: ['جذع', 'عود', 'قشمة', 'درنة'], 
+    ans: 1, 
+    exp: 'يطلق على ساق قصب السكر اسم "العود".' 
+  },
+  { 
+    q: 'يتميز محصول "فول الصويا" بأن بذوره غنية بـ:', 
+    opts: ['النشويات فقط', 'البروتين والزيت معاً', 'الألياف فقط', 'السكريات'], 
+    ans: 1, 
+    exp: 'فول الصويا من أهم المحاصيل التي تجمع بين النسبة العالية من البروتين والزيت.' 
+  },
+  { 
+    q: 'ما هو نوع التلقيح في نبات الذرة الشامية؟', 
+    opts: ['ذاتي حتمي', 'خلطي بالرياح', 'خلطي بالحشرات', 'تلقيح مائي'], 
+    ans: 1, 
+    exp: 'الذرة الشامية وحيدة المسكن ثنائية الجنس، وتلقيحها خلطي بالرياح بنسبة كبيرة.' 
+  },
+  { 
+    q: 'الجزء الذي يتم استهلاك بكتيريا العقد الجذرية فيه هو:', 
+    opts: ['الأوراق', 'الجذور', 'الأزهار', 'الثمار'], 
+    ans: 1, 
+    exp: 'تتكون العقد البكتيرية على جذور النباتات البقولية لتثبيت النيتروجين.' 
+  },
+  { 
+    q: 'تتميز ورقة نبات اللوبيا بأنها:', 
+    opts: ['مركبة ثلاثية', 'مركبة ريشية فردية', 'بسيطة', 'مركبة راحية'], 
+    ans: 0, 
+    exp: 'اللوبيا (Vigna sinensis) أوراقها مركبة ثلاثية الوريقات.' 
+  },
+  { 
+    q: 'ما هو عدد الجذور الجنينية في محصول الشعير؟', 
+    opts: ['جذر واحد', '3 جذور', '5-8 جذور', '15 جذراً'], 
+    ans: 2, 
+    exp: 'يتميز الشعير بأكبر عدد من الجذور الجنينية (5-8) مقارنة بالقمح والذرة.' 
+  },
+  { 
+    q: 'نبات "التيل" يستخرج منه ألياف نوعها:', 
+    opts: ['بذرية', 'لحائية (ساقية)', 'ورقية', 'ثمرية'], 
+    ans: 1, 
+    exp: 'التيل من محاصيل الألياف اللحائية مثل الكتان والجوت.' 
+  },
+  { 
+    q: 'ما هو الاسم العلمي للذرة السكرية (أحد طرز الذرة الشامية)؟', 
+    opts: ['Zea mays rugosa', 'Zea mays indentata', 'Zea mays indurata', 'Zea mays everta'], 
+    ans: 0, 
+    exp: 'الذرة السكرية التي تؤكل خضراء تسمى Zea mays rugosa.' 
+  },
+  { 
+    q: 'تتميز ساق نبات العدس بأنها:', 
+    opts: ['أسطوانية ملساء', 'مضلعة رفيعة ضعيفة', 'خشبية', 'زاحفة'], 
+    ans: 1, 
+    exp: 'ساق العدس مضلعة ورفيعة، وغالباً ما يحتاج النبات للدعامة أو ينمو متجمعاً.' 
+  },
+  { 
+    q: 'ما هو لون "سرة" البذرة في الفول البلدي؟', 
+    opts: ['بيضاء دائماً', 'سوداء أو بيضاء حسب الصنف', 'حمراء', 'خضراء'], 
+    ans: 1, 
+    exp: 'تختلف ألوان السرة في الفول، ومنها الأصناف ذات السرة السوداء (مثل جيزة 2).' 
+  },
+  { 
+    q: 'المحصول الذي يسمى "ملك الأعلاف" هو:', 
+    opts: ['الذرة', 'البرسيم الحجازي', 'البرسيم المصري', 'حشيشة السودان'], 
+    ans: 1, 
+    exp: 'يطلق على البرسيم الحجازي ملك الأعلاف نظراً لقيمته الغذائية العالية وتعمره.' 
+  },
+  { 
+    q: 'ما هو عدد السلاميات في ساق نبات الأرز؟', 
+    opts: ['3-5 سلاميات', '20-30 سلامية', '10-14 سلامية', 'سلامية واحدة'], 
+    ans: 2, 
+    exp: 'تتميز ساق الأرز بوجود عدد محدد من السلاميات يتراوح بين 10 إلى 14 سلامية.' 
+  },
+  { 
+    q: 'تعتبر نورة القمح من النوع:', 
+    opts: ['سنبلة مركبة', 'دالية', 'عرنوسية', 'هامة'], 
+    ans: 0, 
+    exp: 'نورة القمح هي سنبلة مركبة (Spike) تتكون من محور يحمل السنيبلات مباشرة.' 
+  },
+  { 
+    q: 'أين تقع السرة (Hilum) في بذرة الفول البلدي؟', 
+    opts: ['في وسط البذرة', 'عند أحد طرفي البذرة', 'على السطح العلوي', 'لا توجد سرة'], 
+    ans: 1, 
+    exp: 'السرة في الفول تكون واضحة جداً وتقع عند أحد طرفي البذرة.' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "الجوت الكبسولي" هو:', 
+    opts: ['Corchorus olitorius', 'Hibiscus cannabinus', 'Corchorus capsularis', 'Linum'], 
+    ans: 2, 
+    exp: 'الجوت الكبسولي يتميز بثمرة كروية كبسولية واسمه العلمي Corchorus capsularis.' 
+  },
+  { 
+    q: 'ما هي العائلة التي ينتمي إليها محصول "عباد الشمس"؟', 
+    opts: ['Gramineae', 'Malvaceae', 'Leguminosae', 'Compositae'], 
+    ans: 3, 
+    exp: 'ينتمي عباد الشمس للعائلة المركبة (Compositae) أو النجمية.' 
+  },
+  { 
+    q: 'في نبات الذرة الشامية، يخرج "الحرير" (Silks) من:', 
+    opts: ['النورة المذكرة', 'النورة المؤنثة (الكوز)', 'قاعدة الساق', 'إبط الأوراق السفلية'], 
+    ans: 1, 
+    exp: 'الحرير هو عبارة عن المياسم الطويلة للأزهار المؤنثة في الكوز.' 
+  },
+  { 
+    q: 'أي من المحاصيل التالية يمتلك جذراً وتدياً متعمقاً يصل لـ 1.5 متر؟', 
+    opts: ['الأرز', 'القمح', 'القطن', 'الشعير'], 
+    ans: 2, 
+    exp: 'القطن محصول ذو جذر وتدي قوي جداً ومتعمق للبحث عن الرطوبة.' 
+  },
+  { 
+    q: 'ما هو الشكل المورفولوجي لورقة "الخروع"؟', 
+    opts: ['بسيطة راحية فصية', 'مركبة ريشية', 'بسيطة قلبية', 'مركبة ثلاثية'], 
+    ans: 0, 
+    exp: 'ورقة الخروع بسيطة لكنها مقسمة فصياً بشكل يشبه راحة اليد.' 
+  },
+  { 
+    q: 'كم عدد الجذور الجنينية في نبات "القمح"؟', 
+    opts: ['جذر واحد', '4 جذور', '5 جذور', '8 جذور'], 
+    ans: 2, 
+    exp: 'القمح يخرج منه 5 جذور جنينية عند الإنبات.' 
+  },
+  { 
+    q: 'ما هي نورة نبات "السمسم"؟', 
+    opts: ['أزهار وحيدة في آباط الأوراق', 'نورة دالية طرفية', 'نورة سنبلية', 'نورة خيمية'], 
+    ans: 0, 
+    exp: 'أزهار السمسم تخرج فرادى في آباط الأوراق العلوية للساق.' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "الرامي" (المرامي) هو:', 
+    opts: ['Agave sisalana', 'Boehmeria nivea', 'Corchorus', 'Linum'], 
+    ans: 1, 
+    exp: 'الرامي هو Boehmeria nivea ويتبع العائلة القراصية.' 
+  },
+  { 
+    q: 'تتميز ورقة نبات "الكتان" بأنها:', 
+    opts: ['عريضة قلبية', 'شريطية صغيرة جالسة مرتبة حلزونياً', 'مركبة ثلاثية', 'عصارية خنجرية'], 
+    ans: 1, 
+    exp: 'أوراق الكتان بسيطة وصغيرة جداً وتترتب بشكل حلزوني على الساق.' 
+  },
+  { 
+    q: 'ما هو طول "عود" قصب السكر في المتوسط؟', 
+    opts: ['50-100 سم', '2-5 متر', '10-15 متر', '20-30 سم'], 
+    ans: 1, 
+    exp: 'ساق (عود) قصب السكر طويلة جداً وقد تصل إلى 5 أمتار.' 
+  },
+  { 
+    q: 'نبات "بنجر السكر" يعتبر من النباتات:', 
+    opts: ['أحادية الحول', 'ثنائية الحول', 'المعمرة', 'الزاحفة'], 
+    ans: 1, 
+    exp: 'البنجر ثنائي الحول؛ يعطي جذراً سكرياً في السنة الأولى وبذوراً في الثانية.' 
+  },
+  { 
+    q: 'ما هو نوع الجذر في العائلة النجيلية (القمح، الذرة، الأرز)؟', 
+    opts: ['جذر وتدي', 'جذر ليفي عرضي', 'جذر درني', 'جذر تنفسي'], 
+    ans: 1, 
+    exp: 'النجيليات تمتاز بمجموع جذري ليفي ينشأ من العقد السفلية.' 
+  },
+  { 
+    q: 'ألياف نبات "السيزال" تستخرج من:', 
+    opts: ['الساق', 'البذور', 'الأوراق', 'الجذور'], 
+    ans: 2, 
+    exp: 'السيزال هو محصول ألياف ورقية (Leaf fibers).' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "الحمص" هو:', 
+    opts: ['Lens esculenta', 'Vicia faba', 'Cicer arietinum', 'Lupinus'], 
+    ans: 2, 
+    exp: 'الاسم العلمي للحمص هو Cicer arietinum.' 
+  },
+  { 
+    q: 'ما هي الثمرة في نبات "القطن"؟', 
+    opts: ['قرنة', 'حبة', 'كبسولة (لوزة)', 'ثمرة لبيبة'], 
+    ans: 2, 
+    exp: 'ثمرة القطن كبسولة وتعرف فنياً باللوزة.' 
+  },
+  { 
+    q: 'كم عدد الأسدية في زهرة "الأرز"؟', 
+    opts: ['3 أسدية', '10 أسدية', '6 أسدية', 'سداة واحدة'], 
+    ans: 2, 
+    exp: 'الأرز استثناء في العائلة النجيلية بامتلاكه 6 أسدية.' 
+  },
+  { 
+    q: 'محصول "القرطم" يستخدم أساساً لاستخراج:', 
+    opts: ['الألياف', 'السكر', 'الزيت والصبغات', 'البروتين الحيواني'], 
+    ans: 2, 
+    exp: 'القرطم (القطيفة) محصول زيتي وتستخدم أزهاره في الصباغة.' 
+  },
+  { 
+    q: 'الاسم العلمي للبرسيم المصري هو:', 
+    opts: ['Trifolium alexandrinum', 'Medicago sativa', 'Vicia faba', 'Lathyrus'], 
+    ans: 0, 
+    exp: 'البرسيم المصري هو Trifolium alexandrinum.' 
+  },
+  { 
+    q: 'تتميز ساق نبات "الكريشينج" بأنها:', 
+    opts: ['أسطوانية ملساء', 'مضلعة مجنحة', 'خشبية سميكة', 'جوفاء تماماً'], 
+    ans: 1, 
+    exp: 'الكريشينج (الكلر) يتميز بوجود أجنحة على الساق.' 
+  },
+  { 
+    q: 'ما هي العائلة التي يتبعها نبات "البنجر"؟', 
+    opts: ['Chenopodiaceae', 'Gramineae', 'Leguminosae', 'Malvaceae'], 
+    ans: 0, 
+    exp: 'ينتمي بنجر السكر للعائلة الرمرامية (Chenopodiaceae).' 
+  },
+  { 
+    q: 'نورة نبات "الذرة الرفيعة" تسمى:', 
+    opts: ['كوز', 'قنديل (شوشة)', 'سنبلة', 'هامة'], 
+    ans: 1, 
+    exp: 'تسمى نورة الذرة الرفيعة بالقنديل وتوجد في نهاية الساق.' 
+  },
+  { 
+    q: 'بذور نبات "الكتان" تحتوي على زيت بنسبة:', 
+    opts: ['5-10%', '20%', '35-45%', '80%'], 
+    ans: 2, 
+    exp: 'بذور الكتان غنية جداً بالزيت بنسبة تصل لـ 45%.' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "فول الصويا" هو:', 
+    opts: ['Arachis hypogaea', 'Glycine max', 'Vigna sinensis', 'Vicia faba'], 
+    ans: 1, 
+    exp: 'فول الصويا هو Glycine max.' 
+  },
+  { 
+    q: 'ما هو العضو الذي يثبت نبات الذرة الشامية ويمنع "الرقاد"؟', 
+    opts: ['الجذور الجنينية', 'الجذور الهوائية (الدعامية)', 'الأوراق السفلية', 'النورة المذكرة'], 
+    ans: 1, 
+    exp: 'الجذور الهوائية تخرج من العقد فوق سطح التربة لتدعيم النبات.' 
+  },
+  { 
+    q: 'ثمرة "الفول السوداني" تنضج تحت سطح الأرض بسبب:', 
+    opts: ['الجذور الخازنة', 'نمو "المئبر" لأسفل بعد التلقيح', 'سقوط الأزهار في التربة', 'الري الغزير'], 
+    ans: 1, 
+    exp: 'ينمو حامل المبيض (المئبر) ليدفع الثمرة للنمو داخل التربة.' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "اللوبيا" هو:', 
+    opts: ['Vigna sinensis', 'Vicia faba', 'Lens esculenta', 'Glycine max'], 
+    ans: 0, 
+    exp: 'اللوبيا هي Vigna sinensis.' 
+  },
+  { 
+    q: 'تتميز ورقة نبات "الترمس" بأنها مركبة:', 
+    opts: ['ريشية', 'ثلاثية', 'راحية', 'بسيطة'], 
+    ans: 2, 
+    exp: 'وريقات الترمس تخرج من مركز واحد تشبه راحة اليد.' 
+  },
+  { 
+    q: 'ما هو الاسم العلمي للقمح (خبز)؟', 
+    opts: ['Triticum aestivum', 'Triticum durum', 'Zea mays', 'Oryza'], 
+    ans: 0, 
+    exp: 'الاسم العلمي لقمح الخبز هو Triticum aestivum.' 
+  },
+  { 
+    q: 'الجزء المستخدم في "بنجر السكر" لاستخراج السكر هو:', 
+    opts: ['الأوراق', 'الثمار', 'الجذر المتضخم', 'الساق الجارية'], 
+    ans: 2, 
+    exp: 'السكر يخزن في الجذر الوتدي المتضخم للبنجر.' 
+  },
+  { 
+    q: 'ما هو عدد الجذور الجنينية في "الشعير"؟', 
+    opts: ['جذر واحد', '3 جذور', '5-8 جذور', '10 جذور'], 
+    ans: 2, 
+    exp: 'الشعير يمتاز بعدد كبير من الجذور الجنينية يصل لـ 8 جذور.' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "السمسم" هو:', 
+    opts: ['Sesamum indicum', 'Linum', 'Carthamus', 'Helianthus'], 
+    ans: 0, 
+    exp: 'السمسم هو Sesamum indicum.' 
+  },
+  { 
+    q: 'أي من هذه المحاصيل يتبع العائلة "الخبازية" (Malvaceae)؟', 
+    opts: ['الكتان', 'القطن', 'الجوت', 'الرامي'], 
+    ans: 1, 
+    exp: 'القطن هو المحصول الرئيسي في العائلة الخبازية.' 
+  },
+  { 
+    q: 'ورقة نبات "البرسيم المصري" تتكون من:', 
+    opts: ['وريقة واحدة', '3 وريقات', '5 وريقات', '7 وريقات'], 
+    ans: 1, 
+    exp: 'البرسيم أوراقه مركبة ثلاثية الوريقات.' 
+  },
+  { 
+    q: 'تعتبر الذرة الشامية نبات:', 
+    opts: ['ثنائي المسكن', 'وحيد المسكن ثنائي الجنس', 'خنثى دائم التلقيح الذاتي', 'عديم الأزهار'], 
+    ans: 1, 
+    exp: 'الذرة وحيدة المسكن (نفس النبات يحمل أزهاراً مذكرة وأخرى مؤنثة في أماكن منفصلة).' 
+  },
+  { 
+    q: 'ما هي العائلة التي يتبعها نبات "العدس"؟', 
+    opts: ['Gramineae', 'Leguminosae', 'Compositae', 'Malvaceae'], 
+    ans: 1, 
+    exp: 'العدس محصول بقولي يتبع Leguminosae.' 
+  },
+  { 
+    q: 'نبات "الجوت" يستخرج منه ألياف:', 
+    opts: ['بذرية', 'لحائية (من الساق)', 'ورقية', 'جذرية'], 
+    ans: 1, 
+    exp: 'الجوت أليافه لحائية تستخرج من الساق.' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "القرطم" هو:', 
+    opts: ['Carthamus tinctorius', 'Helianthus annuus', 'Linum', 'Sesamum'], 
+    ans: 0, 
+    exp: 'القرطم هو Carthamus tinctorius.' 
+  },
+  { 
+    q: 'ما هو لون أزهار "القطن المصري"؟', 
+    opts: ['بيضاء ثم تتحول للبنفسجي', 'صفراء فاتحة مع بقعة أرجوانية', 'زرقاء', 'حمراء دائماً'], 
+    ans: 1, 
+    exp: 'أزهار القطن المصري صفراء وبها بقعة أرجوانية في القاعدة.' 
+  },
+  { 
+    q: 'ثمرة نبات "العدس" هي:', 
+    opts: ['قرنة قصيرة عريضة بها 1-2 بذرة', 'حبة برة', 'لوزة', 'علبة'], 
+    ans: 0, 
+    exp: 'قرنة العدس مميزة بصغر حجمها ووجود بذرة أو اثنتين فقط.' 
+  },
+  { 
+    q: 'أي محصول يمتلك "أذينات" كبيرة تلتف حول الساق؟', 
+    opts: ['القمح', 'الشعير', 'الأرز', 'الذرة'], 
+    ans: 1, 
+    exp: 'الأذينات الكبيرة الملتفة هي الصفة المميزة للشعير.' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "السيزال" هو:', 
+    opts: ['Agave sisalana', 'Boehmeria nivea', 'Corchorus', 'Hibiscus'], 
+    ans: 0, 
+    exp: 'السيزال هو Agave sisalana.' 
+  },
+  { 
+    q: 'تتميز نورة "عباد الشمس" بوجود أزهار شعاعية وظيفتها:', 
+    opts: ['إنتاج البذور', 'جذب الحشرات للتلقيح', 'تخزين الغذاء', 'لا وظيفة لها'], 
+    ans: 1, 
+    exp: 'الأزهار الشعاعية على الأطراف تكون عقيمة ووظيفتها الجذب فقط.' 
+  },
+  { 
+    q: 'ما هو وزن "1000 بذرة" من السمسم تقريباً؟', 
+    opts: ['30 جرام', '3 جرام', '100 جرام', '500 جرام'], 
+    ans: 1, 
+    exp: 'بذور السمسم دقيقة جداً، والـ 1000 بذرة تزن حوالي 3 جرام فقط.' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "الجلبانة" هو:', 
+    opts: ['Lathyrus sativus', 'Vicia faba', 'Trifolium', 'Medicago'], 
+    ans: 0, 
+    exp: 'الجلبانة هي Lathyrus sativus.' 
+  },
+  { 
+    q: 'في نبات القمح، تخرج "السنابل" من:', 
+    opts: ['إبط الأوراق السفلية', 'قمة الساق (الشمراخ الزهري)', 'قاعدة الجذور', 'تخرج من الأرض'], 
+    ans: 1, 
+    exp: 'نورة القمح طرفية توجد في نهاية الساق.' 
+  },
+  { 
+    q: 'محصول "الكتان" يتبع العائلة:', 
+    opts: ['Linaceae', 'Malvaceae', 'Gramineae', 'Leguminosae'], 
+    ans: 0, 
+    exp: 'الكتان يتبع العائلة الكتانية Linaceae.' 
+  },
+  { 
+    q: 'أي جزء من نبات "الخروع" يحتوي على الزيت؟', 
+    opts: ['الأوراق', 'الجذور', 'البذور', 'الساق'], 
+    ans: 2, 
+    exp: 'يتم عصر بذور الخروع لاستخراج زيت الخروع الطبي والصناعي.' 
+  },
+  { 
+    q: 'ما هي نسبة البروتين في بذور الفول البلدي تقريباً؟', 
+    opts: ['10%', '15%', '24-28%', '50%'], 
+    ans: 2, 
+    exp: 'بذور الفول البلدي غنية جداً بالبروتين وتتراوح نسبته بين 24 إلى 28%.' 
+  },
+  { 
+    q: 'ينتمي محصول "الأرز" إلى قبيلة (Tribe) تسمى:', 
+    opts: ['Oryzeae', 'Hordeae', 'Tripsaceae', 'Andropogoneae'], 
+    ans: 0, 
+    exp: 'قبيلة الأرز هي Oryzeae وتتبع العائلة النجيلية.' 
+  },
+  { 
+    q: 'ما هو الشكل المميز لثمرة "الحمص"؟', 
+    opts: ['قرنة مستطيلة طويلة', 'قرنة قصيرة منتفخة', 'لوزة مفصصة', 'حبة برة'], 
+    ans: 1, 
+    exp: 'ثمرة الحمص قرنة صغيرة منتفخة تحتوي عادة على بذرة واحدة أو اثنتين.' 
+  },
+  { 
+    q: 'يتميز نبات "الشعير" بوجود زوائد عند قاعدة النصل تسمى:', 
+    opts: ['اللسين', 'الأذينات', 'الغمد', 'الصلة'], 
+    ans: 1, 
+    exp: 'الأذينات في الشعير كبيرة جداً وتلتف تماماً حول الساق.' 
+  },
+  { 
+    q: 'ما هو الاسم العلمي لنبات "الخروع"؟', 
+    opts: ['Sesamum indicum', 'Ricinus communis', 'Carthamus tinctorius', 'Linum'], 
+    ans: 1, 
+    exp: 'الاسم العلمي للخروع هو Ricinus communis.' 
+  },
+  { 
+    q: 'في "الذرة الشامية"، تخرج الجذور الدعامية من:', 
+    opts: ['العقد فوق سطح الأرض مباشرة', 'الجذير الجنيني', 'قمة الساق', 'الأوراق العلوية'], 
+    ans: 0, 
+    exp: 'الجذور الدعامية (الهوائية) تخرج من العقد الأولى فوق سطح التربة لتثبيت النبات.' 
+  },
+  { 
+    q: 'تعتبر نورة "بنجر السكر" عند إزهارها نورة:', 
+    opts: ['عنقودية مدمجة', 'دالية', 'سنبلية خيمية', 'هامة'], 
+    ans: 0, 
+    exp: 'نورة البنجر (في السنة الثانية) تكون عنقودية تحمل الأزهار والثمار.' 
+  },
+  { 
+    q: 'كم عدد الوريقات في ورقة نبات "الترمس"؟', 
+    opts: ['3 وريقات', '5-7 وريقات مرتبة راحياً', 'وريقة واحدة بسيطة', '15 وريقة'], 
+    ans: 1, 
+    exp: 'الترمس ورقتة مركبة راحية تتكون غالباً من 5 إلى 7 وريقات.' 
+  },
+  { 
+    q: 'ما هو الموطن الأصلي لمحصول "قصب السكر"؟', 
+    opts: ['جنوب شرق آسيا (الهند وغينيا الجديدة)', 'أمريكا الشمالية', 'أوروبا', 'القطب الشمالي'], 
+    ans: 0, 
+    exp: 'نشأ قصب السكر في المناطق الحارة بجنوب شرق آسيا.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "قمح الديورم" (قمح المكرونة) هو:', 
+    opts: ['Triticum aestivum', 'Triticum durum', 'Hordeum vulgare', 'Zea mays'], 
+    ans: 1, 
+    exp: 'القمح الصلب المستخدم للمكرونة هو Triticum durum.' 
+  },
+  { 
+    q: 'تتميز بتلات زهرة "القطن" بأنها:', 
+    opts: ['منفصلة تماماً', 'ملتحمة عند القاعدة مع الأنبوبة الأسدية', 'غير موجودة', 'خضراء اللون'], 
+    ans: 1, 
+    exp: 'في العائلة الخبازية، تلتحم البتلات مع قاعدة الأنبوبة الأسدية.' 
+  },
+  { 
+    q: 'نبات "السيزال" يزهر مرة واحدة في حياته بعد حوالي:', 
+    opts: ['سنة واحدة', 'سنتين', '6-10 سنوات', '100 سنة'], 
+    ans: 2, 
+    exp: 'السيزال نبات معمر يزهر مرة واحدة في نهاية حياته (6-10 سنوات) ثم يموت.' 
+  },
+  { 
+    q: 'ما هي النسبة المئوية للسكر في سيقان "قصب السكر" الناضجة؟', 
+    opts: ['5%', '12-15%', '40%', '70%'], 
+    ans: 1, 
+    exp: 'تتراوح نسبة السكر في العصير المستخلص بين 12-15%.' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "العدس" هو:', 
+    opts: ['Vicia faba', 'Lens esculenta', 'Cicer arietinum', 'Pisum sativum'], 
+    ans: 1, 
+    exp: 'العدس هو Lens esculenta.' 
+  },
+  { 
+    q: 'تسمى الثمرة في نبات "السمسم":', 
+    opts: ['قرنة', 'علبة (كبسولة)', 'لوزة', 'حبة'], 
+    ans: 1, 
+    exp: 'ثمرة السمسم هي علبة (Capsule) طولية تتفتح عند النضج.' 
+  },
+  { 
+    q: 'أي من المحاصيل التالية يمتلك "أذينات" صغيرة عليها شعيرات؟', 
+    opts: ['القمح', 'الشعير', 'الأرز', 'الذرة'], 
+    ans: 0, 
+    exp: 'القمح يتميز بأذينات متوسطة الحجم وعليها شعيرات واضحة.' 
+  },
+  { 
+    q: 'ما هو الجزء الذي يُصنع منه ألياف "الكتان"؟', 
+    opts: ['خشب الساق', 'لحاء الساق (الألياف اللحائية)', 'شعيرات البذرة', 'عروق الورقة'], 
+    ans: 1, 
+    exp: 'ألياف الكتان توجد في منطقة اللحاء داخل الساق.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "الذرة الرفيعة" هو:', 
+    opts: ['Sorghum bicolor', 'Zea mays', 'Oryza sativa', 'Triticum'], 
+    ans: 0, 
+    exp: 'الذرة الرفيعة هي Sorghum bicolor.' 
+  },
+  { 
+    q: 'يتميز نبات "البرسيم الحجازي" بأنه:', 
+    opts: ['حولي شتوي', 'حولي صيفي', 'معمر يمكث بالزمام 5-7 سنوات', 'ثنائي الحول'], 
+    ans: 2, 
+    exp: 'البرسيم الحجازي نبات معمر يستمر في الأرض لسنوات عديدة.' 
+  },
+  { 
+    q: 'ما هو عدد الكروموسومات (2n) في نبات "الذرة الشامية"؟', 
+    opts: ['14', '20', '42', '24'], 
+    ans: 1, 
+    exp: 'العدد الكروموسومي للذرة الشامية هو 20 كروموسوم.' 
+  },
+  { 
+    q: 'ثمرة "بنجر السكر" تسمى من الناحية النباتية:', 
+    opts: ['حبة', 'كرة بذور (مركبة)', 'قرنة', 'لبيبة'], 
+    ans: 1, 
+    exp: 'ثمرة البنجر هي "كرة بذور" (Seed ball) تحتوي على أكثر من جنين.' 
+  },
+  { 
+    q: 'ما هو العضو الذي يسمى "اللسين" (Ligule)؟', 
+    opts: ['زائدة غشائية عند اتصال النصل بالغمد', 'جزء من الجذر', 'نوع من الثمار', 'برعم إبطي'], 
+    ans: 0, 
+    exp: 'اللسين هو نمو غشائي يوجد عند مكان التقاء نصل الورقة بغمدها في النجيليات.' 
+  },
+  { 
+    q: 'نبات "الجوت" يتبع العائلة:', 
+    opts: ['Malvaceae', 'Tiliaceae', 'Linaceae', 'Gramineae'], 
+    ans: 1, 
+    exp: 'الجوت يتبع العائلة "التيليّة" Tiliaceae.' 
+  },
+  { 
+    q: 'ما هو الاسم العلمي لـ "القطن الأمريكي" (آبلاند)؟', 
+    opts: ['Gossypium barbadense', 'Gossypium hirsutum', 'Gossypium arboreum', 'Linum'], 
+    ans: 1, 
+    exp: 'القطن الأمريكي قصير التيلة هو Gossypium hirsutum.' 
+  },
+  { 
+    q: 'في "القمح"، تسمى السلامية الأخيرة التي تحمل السنبلة:', 
+    opts: ['الغمد', 'الشمراخ (Peduncle)', 'النصل', 'الأذينة'], 
+    ans: 1, 
+    exp: 'الشمراخ هو الجزء العلوي من الساق الذي يحمل نورة القمح.' 
+  },
+  { 
+    q: 'الاسم العلمي لنبات "الترمس" هو:', 
+    opts: ['Lupinus termis', 'Vicia faba', 'Cicer arietinum', 'Lens'], 
+    ans: 0, 
+    exp: 'الترمس هو Lupinus termis.' 
+  },
+  { 
+    q: 'تتميز نورة "الأرز" بأنها:', 
+    opts: ['سنبلة مدمجة', 'دالية منبسطة أو مدمجة', 'عرنوسية', 'هامة'], 
+    ans: 1, 
+    exp: 'نورة الأرز دالية (Panicle) تحمل السنيبلات على فروع.' 
+  },
+  { 
+    q: 'كم تبلغ نسبة الزيت في بذور "القطن"؟', 
+    opts: ['5-10%', '18-24%', '40-50%', '80%'], 
+    ans: 1, 
+    exp: 'بذور القطن تحتوي على نسبة زيت تتراوح بين 18-24%.' 
+  },
+  { 
+    q: 'نبات "القرطم" يمتلك جذراً:', 
+    opts: ['ليفياً سطحياً', 'وتدياً قوياً', 'درنياً سكرياً', 'هوائياً'], 
+    ans: 1, 
+    exp: 'القرطم نبات شتوي ذو جذر وتدي متعمق يتحمل الجفاف.' 
+  },
+  { 
+    q: 'ما هو "السفا" (Awn) في القمح والشعير؟', 
+    opts: ['نوع من الجذور', 'امتداد إبري للقمبعات أو العصيفات', 'ورقة صغيرة', 'جزء من الساق'], 
+    ans: 1, 
+    exp: 'السفا هو الزائدة الخيطية الصلبة التي تخرج من أغلفة الزهرة.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "عباد الشمس" هو:', 
+    opts: ['Helianthus annuus', 'Carthamus tinctorius', 'Sesamum', 'Linum'], 
+    ans: 0, 
+    exp: 'عباد الشمس هو Helianthus annuus.' 
+  },
+  { 
+    q: 'أي من المحاصيل التالية يعتبر "سيفياً" (Summer Crop)؟', 
+    opts: ['القمح', 'الكتان', 'الذرة الشامية', 'الفول البلدي'], 
+    ans: 2, 
+    exp: 'الذرة الشامية محصول صيفي يحتاج حرارة عالية، بينما الباقي شتوي.' 
+  },
+  { 
+    q: 'ما هو العضو المستخدم في تكاثر "قصب السكر" تجارياً؟', 
+    opts: ['البذور', 'العقل الساقية', 'الفسائل الجزرية', 'الأوراق'], 
+    ans: 1, 
+    exp: 'يتم زراعة قصب السكر عن طريق "العقل" التي تحتوي على براعم.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "الحلبة" هو:', 
+    opts: ['Trigonella foenum-graecum', 'Vicia faba', 'Lupinus', 'Medicago'], 
+    ans: 0, 
+    exp: 'الحلبة هي Trigonella foenum-graecum.' 
+  },
+  { 
+    q: 'تتميز ورقة "القطن" بأنها:', 
+    opts: ['بسيطة قلبية فصية راحية', 'مركبة ريشية', 'شريطية جالسة', 'مركبة ثلاثية'], 
+    ans: 0, 
+    exp: 'ورقة القطن بسيطة ومقسمة لـ 3-5 فصوص بشكل راحي.' 
+  },
+  { 
+    q: 'ما هو عدد الأسدية في زهرة "الفول البلدي"؟', 
+    opts: ['3 أسدية', '6 أسدية', '10 أسدية (9 ملتحمة + 1 حرة)', '5 أسدية'], 
+    ans: 2, 
+    exp: 'في العائلة البقولية، الأسدية غالباً 10، منها 9 ملتحمة وواحدة حرة (سداة ديمية).' 
+  },
+  { 
+    q: 'نبات "بنجر السكر" يتبع رتبة (Order):', 
+    opts: ['Centrospermae', 'Graminales', 'Rosales', 'Malvales'], 
+    ans: 0, 
+    exp: 'البنجر يتبع رتبة Centrospermae.' 
+  },
+  { 
+    q: 'ما هو نوع الثمرة في "الخروع"؟', 
+    opts: ['قرنة', 'علبة منشقة (ثلاثية الحجرات)', 'حبة', 'لوزة'], 
+    ans: 1, 
+    exp: 'ثمرة الخروع علبة بها 3 حجرات، كل حجرة بها بذرة واحدة.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "الجلبانة" هو:', 
+    opts: ['Lathyrus sativus', 'Vicia faba', 'Lens', 'Cicer'], 
+    ans: 0, 
+    exp: 'الجلبانة هي Lathyrus sativus.' 
+  },
+  { 
+    q: 'تتميز ساق "الكتان" بأنها:', 
+    opts: ['خشنة جداً', 'ملساء تماماً مغطاة بطبقة شمعية', 'مربعة الشكل', 'جوفاء'], 
+    ans: 1, 
+    exp: 'ساق الكتان ملساء ورفيعة ومغطاة بطبقة شمعية تحميها.' 
+  },
+  { 
+    q: 'أي جزء من حبة "القمح" يحتوي على "الجلوتين"؟', 
+    opts: ['الغلاف الخارجي', 'الجنين', 'الإندوسبرم (النشويات)', 'السرة'], 
+    ans: 2, 
+    exp: 'الجلوتين هو بروتين يوجد في إندوسبرم حبة القمح.' 
+  },
+  { 
+    q: 'نبات "الرامي" (Boehmeria nivea) يستخرج منه ألياف تستخدم في:', 
+    opts: ['صناعة السكر', 'صناعة الورق والمنسوجات القوية', 'علف للماشية', 'لا قيمة له'], 
+    ans: 1, 
+    exp: 'ألياف الرامي من أقوى الألياف النباتية وتستخدم في المنسوجات الفاخرة.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "فول السوداني" هو:', 
+    opts: ['Arachis hypogaea', 'Glycine max', 'Vigna sinensis', 'Phaseolus'], 
+    ans: 0, 
+    exp: 'الفول السوداني هو Arachis hypogaea.' 
+  },
+  { 
+    q: 'ما هي نسبة الزيت في بذور "السمسم"؟', 
+    opts: ['20%', '30%', '50-60%', '10%'], 
+    ans: 2, 
+    exp: 'السمسم من أغنى المحاصيل بالزيت، حيث تصل نسبته لأكثر من 50%.' 
+  },
+  { 
+    q: 'تتميز نورة "الذرة الرفيعة" بأنها:', 
+    opts: ['موجودة في إبط الأوراق', 'طرفية في قمة الساق', 'تخرج من الجذور', 'تحت سطح الأرض'], 
+    ans: 1, 
+    exp: 'نورة الذرة الرفيعة (القنديل) تكون دائماً طرفية.' 
+  },
+  { 
+    q: 'ما هو لون القنابات (Bracts) التي تحيط بزهرة "القطن"؟', 
+    opts: ['حمراء', 'خضراء (وتسمى الكأس الخارجي)', 'بيضاء', 'شفافة'], 
+    ans: 1, 
+    exp: 'يحيط بزهرة القطن 3 قنابات خضراء كبيرة ومسننة.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "البرسيم الحجازي" هو:', 
+    opts: ['Medicago sativa', 'Trifolium alexandrinum', 'Vicia', 'Lupinus'], 
+    ans: 0, 
+    exp: 'البرسيم الحجازي هو Medicago sativa.' 
+  },
+  { 
+    q: 'كم عدد البذور في ثمرة "العدس"؟', 
+    opts: ['10-20 بذرة', '1-2 بذرة فقط', 'بذرة واحدة دائماً', 'ألف بذرة'], 
+    ans: 1, 
+    exp: 'قرنة العدس صغيرة جداً وتحمل عادة بذرة واحدة أو اثنتين.' 
+  },
+  { 
+    q: 'أي محصول يتميز بـ "ساق مجنحة" (Winged stem)؟', 
+    opts: ['الفول', 'الكريشينج (الكلر)', 'العدس', 'الحمص'], 
+    ans: 1, 
+    exp: 'الكريشينج محصول بقولي يتميز بوجود أجنحة على الساق.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "السيزال" هو:', 
+    opts: ['Agave sisalana', 'Boehmeria', 'Corchorus', 'Linum'], 
+    ans: 0, 
+    exp: 'السيزال هو Agave sisalana.' 
+  },
+  { 
+    q: 'ما هو الموطن الأصلي لـ "بنجر السكر"؟', 
+    opts: ['شواطئ البحر المتوسط وأوروبا', 'أفريقيا الاستوائية', 'أستراليا', 'الصين'], 
+    ans: 0, 
+    exp: 'نشأ البنجر في المناطق المعتدلة والباردة في أوروبا وحوض المتوسط.' 
+  },
+  { 
+    q: 'تسمى النورة المذكرة في "الذرة الشامية" بـ:', 
+    opts: ['الكوز', 'الشوشة (Tassel)', 'القنديل', 'السنبلة'], 
+    ans: 1, 
+    exp: 'النورة المذكرة طرفية وتسمى الشوشة.' 
+  },
+  { 
+    q: 'ما هو الجزء النباتي الذي نأكله في "الفول السوداني"؟', 
+    opts: ['الثمرة (القرنة)', 'البذور الناضجة', 'الجذور', 'الأوراق'], 
+    ans: 1, 
+    exp: 'نحن نستهلك البذور الموجودة داخل القرنة التي تنضج تحت الأرض.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "القطن المصري" هو:', 
+    opts: ['Gossypium barbadense', 'Gossypium hirsutum', 'Gossypium herbaceum', 'Hibiscus'], 
+    ans: 0, 
+    exp: 'القطن المصري طويل التيلة هو Gossypium barbadense.' 
+  },
+  { 
+    q: 'أي من هذه المحاصيل يتبع العائلة "المركبة" (Compositae)؟', 
+    opts: ['القرطم وعباد الشمس', 'السمسم والكتان', 'القطن والجوت', 'القمح والأرز'], 
+    ans: 0, 
+    exp: 'القرطم وعباد الشمس كلاهما يتبع العائلة المركبة.' 
+  },
+  { 
+    q: 'تتميز أوراق "البرسيم المصري" بوجود:', 
+    opts: ['أشواك على الحواف', 'بقعة بيضاء شكل (V) على الوريقات', 'لون أحمر داكن', 'رائحة نفاذة'], 
+    ans: 1, 
+    exp: 'كثيراً ما يوجد علامة شكل رقم 7 (أو V) بيضاء على وريقات البرسيم المصري.' 
+  },
+  { 
+    q: 'ما هو الاسم العلمي لـ "الذرة السكرية"؟', 
+    opts: ['Zea mays rugosa', 'Zea mays indentata', 'Zea mays indurata', 'Zea mays everta'], 
+    ans: 0, 
+    exp: 'الذرة السكرية هي Zea mays rugosa.' 
+  },
+  { 
+    q: 'يستخرج "الزيت الحار" من:', 
+    opts: ['السمسم', 'الكتان', 'الخروع', 'جوز الهند'], 
+    ans: 1, 
+    exp: 'زيت الكتان (الكتان الزيتي) هو ما يعرف بالزيت الحار.' 
+  },
+  { 
+    q: 'كم عدد الكروموسومات في "قمح الخبز" (T. aestivum)؟', 
+    opts: ['14', '28', '42', '56'], 
+    ans: 2, 
+    exp: 'قمح الخبز سداسي الكروموسومات (Hexaploid) وعدده 42.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "اللوبيا" هو:', 
+    opts: ['Vigna sinensis', 'Phaseolus vulgaris', 'Vicia faba', 'Lens'], 
+    ans: 0, 
+    exp: 'اللوبيا هي Vigna sinensis.' 
+  },
+  { 
+    q: 'تتميز ثمرة "الخروع" بوجود:', 
+    opts: ['أشواك مرنة على سطحها الخارجي', 'ملمس ناعم جداً', 'لون ذهبي', 'قشرة رقيقة جداً'], 
+    ans: 0, 
+    exp: 'ثمرة الخروع (العلبة) غالباً ما تكون مغطاة بأشواك لينة.' 
+  },
+  { 
+    q: 'ما هو وزن "1000 حبة" من القمح تقريباً؟', 
+    opts: ['10 جرام', '40-50 جرام', '200 جرام', '1 كيلو'], 
+    ans: 1, 
+    exp: 'يتراوح وزن ألف حبة قمح بين 40 إلى 50 جرام في المتوسط.' 
+  },
+  { 
+    q: 'أي جزء من "بنجر السكر" يحتوي على أعلى تركيز للسكر؟', 
+    opts: ['التاج', 'العنق', 'جسم الجذر (المنطقة الوسطى)', 'الذيل'], 
+    ans: 2, 
+    exp: 'منطقة الجسم هي المخزن الرئيسي، بينما التاج غني بالأملاح والشوائب.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "التيل" هو:', 
+    opts: ['Hibiscus cannabinus', 'Gossypium', 'Linum', 'Corchorus'], 
+    ans: 0, 
+    exp: 'التيل هو Hibiscus cannabinus ويتبع العائلة الخبازية.' 
+  },
+  { 
+    q: 'نبات "السمسم" يعتبر من النباتات:', 
+    opts: ['ذات اليوم القصير', 'ذات اليوم الطويل', 'المحايدة', 'التي لا تحتاج ضوء'], 
+    ans: 0, 
+    exp: 'السمسم نبات صيفي يتبع نباتات اليوم القصير.' 
+  },
+  { 
+    q: 'ما هو عدد حجرات "لوزة القطن"؟', 
+    opts: ['حجرة واحدة', '2 حجرة', '3-5 حجرات', '10 حجرات'], 
+    ans: 2, 
+    exp: 'تتكون لوزة القطن من 3 إلى 5 حجرات حسب الصنف.' 
+  },
+  { 
+    q: 'تتميز نورة "البرسيم الحجازي" بأنها:', 
+    opts: ['عنقودية إبطية بنفسجية اللون', 'هامة كروية بيضاء', 'دالية صفراء', 'عرنوسية'], 
+    ans: 0, 
+    exp: 'نورة البرسيم الحجازي عنقودية وأزهارها غالباً بنفسجية أو زرقاء.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "الذرة المنفوشة" (الفشار) هو:', 
+    opts: ['Zea mays everta', 'Zea mays rugosa', 'Zea mays indentata', 'Zea mays mays'], 
+    ans: 0, 
+    exp: 'ذرة الفشار هي Zea mays everta.' 
+  },
+  { 
+    q: 'كم عدد الأسدية في زهرة "القطن"؟', 
+    opts: ['5 أسدية', '10 أسدية', 'عديدة وملتحمة في أنبوبة أسدية', 'لا يوجد أسدية'], 
+    ans: 2, 
+    exp: 'تتميز العائلة الخبازية بوجود عدد كبير جداً من الأسدية الملتحمة حول القلم.' 
+  },
+  { 
+    q: 'أي محصول تستخرج منه ألياف "الرامي"؟', 
+    opts: ['اللحاء', 'الأوراق', 'البذور', 'الثمار'], 
+    ans: 0, 
+    exp: 'الرامي محصول ألياف لحائية (ساقية).' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "فول الصويا" هو:', 
+    opts: ['Glycine max', 'Arachis', 'Vigna', 'Phaseolus'], 
+    ans: 0, 
+    exp: 'فول الصويا هو Glycine max.' 
+  },
+  { 
+    q: 'تتميز حبة "الأرز" بوجود غلافين خارجيين يطلق عليهما:', 
+    opts: ['القمبعات', 'العصيفة والآتية (Hull)', 'الغمد', 'النخالة'], 
+    ans: 1, 
+    exp: 'الأرز يحيط به غلافان صلبان (العصيفة والآتية) ويسميان بالقشرة.' 
+  },
+  { 
+    q: 'ما هو اللون الغالب لأزهار "الكتان"؟', 
+    opts: ['أصفر', 'أحمر', 'أزرق سماوي أو أبيض', 'أسود'], 
+    ans: 2, 
+    exp: 'أزهار الكتان تتميز بلونها الأزرق السماوي الجميل.' 
+  },
+  { 
+    q: 'يسمى "جنين" حبة القمح بـ:', 
+    opts: ['الإندوسبرم', 'القصعة (Scutellum)', 'الغلاف', 'الجذير'], 
+    ans: 1, 
+    exp: 'القصعة هي جزء من الجنين وظيفته امتصاص الغذاء من الإندوسبرم.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "قصب السكر" هو:', 
+    opts: ['Saccharum officinarum', 'Beta vulgaris', 'Sorghum', 'Zea'], 
+    ans: 0, 
+    exp: 'قصب السكر هو Saccharum officinarum.' 
+  },
+  { 
+    q: 'كم عدد الحشات التي يعطيها "البرسيم المصري"؟', 
+    opts: ['حشة واحدة', 'حشتان', '4-6 حشات', '10 حشات'], 
+    ans: 2, 
+    exp: 'البرسيم المصري المسقاوي يعطي عادة من 4 إلى 6 حشات.' 
+  },
+  { 
+    q: 'تتميز ثمرة "عباد الشمس" بأنها ثمرة:', 
+    opts: ['حبة', 'قرنة', 'فقيرة (Achene)', 'لبيبة'], 
+    ans: 2, 
+    exp: 'ثمرة عباد الشمس هي ثمرة "فقيرة" حيث لا يلتحم الغلاف بالبذرة.' 
+  },
+  { 
+    q: 'ما هو نوع التلقيح في نبات "العدس"؟', 
+    opts: ['ذاتي حتمي (قبل تفتح الزهرة)', 'خلطي بالحشرات', 'خلطي بالرياح', 'صناعي'], 
+    ans: 0, 
+    exp: 'العدس نبات ذاتي التلقيح بنسبة 100% تقريباً.' 
+  },
+  { 
+    q: 'الاسم العلمي لـ "بنجر السكر" هو:', 
+    opts: ['Beta vulgaris', 'Saccharum', 'Daucus', 'Solanum'], 
+    ans: 0, 
+    exp: 'بنجر السكر هو Beta vulgaris.' 
+  },
+  { 
+    q: 'المحصول الذي يستخرج منه ألياف ورقية قوية هو:', 
+    opts: ['الكتان', 'الجوت', 'السيزال', 'القطن'], 
+    ans: 2, 
+    exp: 'السيزال هو المحصول الورقي الأساسي للألياف.' 
+  }
+];
+
+
+
+// ==================== QUIZ ENGINE ====================
+let quizIndex = 0, quizScore = 0, quizAnswered = false;
+
+function saveQuizProgress() {
+  localStorage.setItem('quizProgress', JSON.stringify({ quizIndex, quizScore }));
+}
+
+function loadQuizProgress() {
+  const saved = localStorage.getItem('quizProgress');
+  return saved ? JSON.parse(saved) : null;
+}
+
+function clearQuizProgress() {
+  localStorage.removeItem('quizProgress');
+}
+
+function openQuiz() {
+  const saved = loadQuizProgress();
+  if (saved && saved.quizIndex > 0 && saved.quizIndex < QUESTIONS.length) {
+    document.getElementById('quizContainer').innerHTML = `
+      <div class="question-card" style="text-align:center">
+        <div class="question-text">💾 عندك تقدم محفوظ!</div>
+        <p style="color:#555;margin-bottom:24px">وصلت لسؤال ${saved.quizIndex + 1} من ${QUESTIONS.length} | النتيجة: ${saved.quizScore}</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-restart" onclick="resumeQuiz()" style="background:linear-gradient(135deg,#2d6a4f,#1a3a2a)">▶️ كمّل من نفس المكان</button>
+          <button class="btn-restart" onclick="initQuiz()" style="background:linear-gradient(135deg,#888,#555)">🔄 ابدأ من الأول</button>
+        </div>
+      </div>`;
+    document.getElementById('quizBar').style.width = ((saved.quizIndex / QUESTIONS.length) * 100) + '%';
+    document.getElementById('quizCounter').textContent = `سؤال ${saved.quizIndex + 1} من ${QUESTIONS.length} | النتيجة: ${saved.quizScore}`;
+  } else {
+    initQuiz();
+  }
+}
+
+function resumeQuiz() {
+  const saved = loadQuizProgress();
+  if (saved) {
+    quizIndex = saved.quizIndex;
+    quizScore = saved.quizScore;
+    quizAnswered = false;
+    renderQuestion();
+  }
+}
+
+function initQuiz() {
+  quizIndex = 0; quizScore = 0; quizAnswered = false;
+  clearQuizProgress();
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const total = QUESTIONS.length;
+  if (quizIndex >= total) {
+    showQuizResult();
+    return;
+  }
+  document.getElementById('quizBar').style.width = ((quizIndex/total)*100) + '%';
+  document.getElementById('quizCounter').textContent = `سؤال ${quizIndex+1} من ${total} | النتيجة: ${quizScore}`;
+  const q = QUESTIONS[quizIndex];
+  quizAnswered = false;
+  document.getElementById('quizContainer').innerHTML = `
+    <div class="question-card">
+      <div class="question-text">❓ ${q.q}</div>
+      <ul class="options-list">
+        ${q.opts.map((o,i) => `<li class="option-item"><button class="option-btn" onclick="answerQuiz(${i})">${o}</button></li>`).join('')}
+      </ul>
+      <div class="explanation-box" id="expBox">💡 <strong>التفسير:</strong> ${q.exp}</div>
+      <button class="btn-next" id="nextBtn" onclick="nextQuestion()">السؤال التالي ←</button>
+    </div>`;
+}
+
+function answerQuiz(idx) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = QUESTIONS[quizIndex];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((b,i) => {
+    b.disabled = true;
+    if (i === q.ans) b.classList.add('correct');
+    else if (i === idx && idx !== q.ans) b.classList.add('wrong');
+  });
+  if (idx === q.ans) quizScore++;
+  else { document.getElementById('expBox').classList.add('show'); }
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function nextQuestion() {
+  quizIndex++;
+  saveQuizProgress();
+  renderQuestion();
+}
+
+function showQuizResult() {
+  clearQuizProgress();
+  const pct = Math.round((quizScore/QUESTIONS.length)*100);
+  let msg = pct >= 90 ? '🏆 ممتاز! جاهز للامتحان' : pct >= 70 ? '👍 كويس! راجع النقاط الضعيفة' : '📚 راجع المنهج تاني';
+  document.getElementById('quizContainer').innerHTML = `
+    <div class="result-screen">
+      <div class="result-score">${pct}%</div>
+      <h3>${msg}</h3>
+      <p>أجبت صح على ${quizScore} من ${QUESTIONS.length} سؤال</p>
+      <button class="btn-restart" onclick="initQuiz()">🔄 حل تاني</button>
+    </div>`;
+  document.getElementById('quizBar').style.width = '100%';
+}
+
+// ==================== T/F DATA ====================
+const TF_QUESTIONS = [
+  { q: 'تنشأ الجذور العرضية في الذرة الشامية من العقد الموجودة فوق سطح الأرض مباشرة', ans: false, exp: 'خطأ — تنشأ من العقد السفلى للساق الموجودة "تحت" سطح الأرض على بعد 2-3 سم' },
+  { q: 'يصل عدد المحيطات في الجذور العرضية للذرة الشامية إلى 4 محيطات', ans: true, exp: 'صحيح — تخرج في محيطات لا يتجاوز عددها أربعة' },
+  { q: 'الاسم العلمي للذرة الرفيعة هو Sorghum vulgare', ans: true, exp: 'صحيح — Sorghum vulgare هو الاسم العلمي المعتمد للذرة الرفيعة' },
+  { q: 'نورة القمح سنبلة مركبة بينما نورة الشعير سنبلة بسيطة', ans: false, exp: 'خطأ — كلاهما سنبلة مركبة ولكن تختلف في عدد السنيبلات عند كل عقدة' },
+  { q: 'في نبات الشعير، توجد 3 سنيبلات عند كل عقدة من عقد المحور', ans: true, exp: 'صحيح — هذه صفة مميزة للشعير تميزه عن القمح' },
+  { q: 'أزهار العائلة النجيلية أزهار كبيرة الحجم زاهية الألوان', ans: false, exp: 'خطأ — أزهار النجيليات صغيرة جداً وغير ملونة (أزهار عشبية)' },
+  { q: 'تتكون سنيبلة القمح من قمبعتين تحيطان بعدد من الأزهار', ans: true, exp: 'صحيح — القمبعات هي الأغلفة الخارجية للسنيبلة' },
+  { q: 'الثمرة في العائلة النجيلية تسمى "برة" (Caryopsis)', ans: true, exp: 'صحيح — هي ثمرة جافة لا تنفتح ويلتحم فيها غلاف الثمرة بالبذرة' },
+  { q: 'يحتوي جنين حبة القمح على ريشة وجذير وقصعة واحدة', ans: true, exp: 'صحيح — القصعة (Scutellum) هي الفلقة الوحيدة في جنين النجيليات' },
+  { q: 'الاسم العلمي للفول السوداني هو Arachis hypogaea', ans: true, exp: 'صحيح — الاسم العلمي للفول السوداني' },
+  { q: 'ساق نبات الفول البلدي ساق مستديرة ملساء', ans: false, exp: 'خطأ — ساق الفول البلدي ساق "مربعة" مضلعة وجوفاء' },
+  { q: 'ورقة الفول البلدي مركبة ريشية تنتهي بوريقة طرفية', ans: false, exp: 'خطأ — ورقة الفول البلدي مركبة ريشية "زوجية" (لا تنتهي بوريقة طرفية)' },
+  { q: 'تتميز ورقة البرسيم المصري بوجود عنق طويل وأذينات ملتحمة بالعنق', ans: true, exp: 'صحيح — الأذينات في البرسيم تكون عريضة وملتحمة بقاعدة العنق' },
+  { q: 'الاسم العلمي للعدس هو Lens culinaris', ans: true, exp: 'صحيح — Lens culinaris أو Lens esculenta كلاهما صحيح للعدس' },
+  { q: 'نبات الحمص يتميز بوجود شعيرات غدية تفرز أحماضاً عضوية', ans: true, exp: 'صحيح — تفرز أحماضاً مثل الماليك والأوكساليك' },
+  { q: 'ثمرة الحلبة عبارة عن قرنة طويلة مدببة الطرف تحتوي على 10-20 بذرة', ans: true, exp: 'صحيح — قرنة الحلبة طويلة ومنحنية قليلاً' },
+  { q: 'الاسم العلمي للترمس هو Lupinus albus', ans: true, exp: 'صحيح — هو الاسم العلمي للترمس الأبيض' },
+  { q: 'تعتبر نورة القطن نورة صادقة طرفية', ans: false, exp: 'خطأ — نورة القطن "كاذبة" (Sympodial) تخرج في مواجهة الأوراق' },
+  { q: 'تتكون زهرة القطن من 5 بتلات ملتحمة كلياً', ans: false, exp: 'خطأ — البتلات 5 "منفصلة" ولكنها تلتحم من القاعدة فقط مع الأنبوبة الأسدية' },
+  { q: 'تتميز العائلة الخبازية (القطن) بوجود أنبوبة أسدية تحيط بالقلم', ans: true, exp: 'صحيح — هذه صفة تشريحية هامة جداً في القطن' },
+  { q: 'ألياف القطن هي نموات خارجية من خلايا بشرة القصرة (غلاف البذرة)', ans: true, exp: 'صحيح — الألياف تخرج من البذرة نفسها وليس الساق' },
+  { q: 'الكتان من محاصيل الألياف اللحائية (Bast fibers)', ans: true, exp: 'صحيح — الألياف تستخرج من منطقة اللحاء في الساق' },
+  { q: 'تتكون ثمرة الكتان من كبسولة تحتوي على 5 بذور فقط', ans: false, exp: 'خطأ — الكبسولة مقسمة لـ 5 مساكن وبها "10 بذور"' },
+  { q: 'بذرة الكتان بيضاوية الشكل ملساء لامعة تحتوي على مادة مخاطية', ans: true, exp: 'صحيح — القصرة تحتوي على مادة صمغية مخاطية' },
+  { q: 'الاسم العلمي للجوت هو Corchorus spp', ans: true, exp: 'صحيح — يتبعه الجوت الملوخيا والجوت الكبسولي' },
+  { q: 'يتميز نبات الرامي بوجود شعيرات بيضاء فضية على السطح "العلوي" للورقة', ans: false, exp: 'خطأ — الشعيرات البيضاء موجودة على السطح "السفلي" للورقة' },
+  { q: 'السيزال نبات معمر يمكث بالأرض من 6 إلى 10 سنوات', ans: true, exp: 'صحيح — هو نبات معمر صباري' },
+  { q: 'ألياف السيزال تستخرج من سيقان النبات', ans: false, exp: 'خطأ — ألياف السيزال ألياف "ورقية" تستخرج من الأوراق العصارية' },
+  { q: 'الاسم العلمي للخروع هو Ricinus communis', ans: true, exp: 'صحيح — وينتمي للعائلة الفربيونية' },
+  { q: 'بذرة الخروع تحتوي على بروز لحمي يسمى "البسباسة" (Caruncle)', ans: true, exp: 'صحيح — بروز أبيض يقع جهة السرة' },
+  { q: 'السمسم نبات شتوي يزرع في أكتوبر ونوفمبر', ans: false, exp: 'خطأ — السمسم محصول "صيفي" يحتاج لدرجات حرارة عالية' },
+  { q: 'تعتبر نورة عباد الشمس "هامة" (Head) تحيط بها قنابات خضراء', ans: true, exp: 'صحيح — القنابات تسمى "القلافة"' },
+  { q: 'الأزهار الشعاعية في نورة عباد الشمس هي المسؤولة عن إنتاج البذور', ans: false, exp: 'خطأ — الأزهار الشعاعية "عقيمة" لجذب الحشرات، أما القرصية فهي الخصبة' },
+  { q: 'الاسم العلمي للقرطم هو Carthamus tinctorius', ans: true, exp: 'صحيح — ويسمى أيضاً "العصفر"' },
+  { q: 'بذرة القرطم (العصفر) هي في الواقع ثمرة "فقيرة"', ans: true, exp: 'صحيح — ثمرة لا تنفتح تحتوي على بذرة واحدة' },
+  { q: 'قصب السكر يتكاثر بالبذور في الزراعة الإنتاجية بمصر', ans: false, exp: 'خطأ — يتكاثر خضرياً بـ "العقل الساقية"' },
+  { q: 'توجد "حلقة النمو" في ساق قصب السكر فوق العقدة مباشرة', ans: true, exp: 'صحيح — هي منطقة مرستيمية مسؤولة عن استطالة السلامية' },
+  { q: 'بنجر السكر يتبع العائلة الرمرامية Chenopodiaceae', ans: true, exp: 'صحيح — مثل السبانخ والسلق' },
+  { q: 'تتركز أعلى نسبة سكر في بنجر السكر في منطقة "التاج"', ans: false, exp: 'خطأ — منطقة التاج هي الأقل في السكر والأعلى في الشوائب' },
+  { q: 'الجذر السكري في البنجر يتكون من التاج والعنق والجذر الحقيقي', ans: true, exp: 'صحيح — هذه هي المناطق الثلاث المكونة للجذر المتضخم' },
+  { q: 'البرسيم الحجازي (Alfalfa) يتبع العائلة النجيلية', ans: false, exp: 'خطأ — البرسيم الحجازي محصول بقولي (Leguminosae)' },
+  { q: 'تتكون ورقة البرسيم الحجازي من 3 وريقات، الوريقة الوسطى لها عنق أطول', ans: true, exp: 'صحيح — هذه صفة تميزه عن بعض أنواع البرسيم الأخرى' },
+  { q: 'الاسم العلمي لفول الصويا هو Glycine max', ans: true, exp: 'صحيح — وهو من المحاصيل البقولية الزيتية' },
+  { q: 'ساق الذرة الشامية ساق جوفاء تماماً مثل القمح', ans: false, exp: 'خطأ — ساق الذرة الشامية "مصمتة" (ممتلئة بالنخاع)' },
+  { q: 'تحمل السنيبلة في القمح فوق محور متعرج يسمى "الراشس" (Rachis)', ans: true, exp: 'صحيح — هو المحور الزجزاجي للسنبلة' },
+  { q: 'الأذينات في ورقة الأرز تكون طويلة جداً ومغطاة بشعيرات طويلة', ans: true, exp: 'صحيح — الأرز يتميز بأذينات شعرية واضحة' },
+  { q: 'تعتبر نورة الذرة الرفيعة دالية (Panicle)', ans: true, exp: 'صحيح — وتكون في قمة الساق' },
+  { q: 'ثمرة المحاصيل البقولية تسمى دائماً "قرنة" (Pod)', ans: true, exp: 'صحيح — ثمرة جافة تنفتح من شقين' },
+  { q: 'بذرة القطن المصري (جيزة) تكون بذرة "عريانة" (بدون زغب)', ans: true, exp: 'صحيح — القطن المصري يمتاز ببذور خالية من الزغب (Linter-free)' },
+  { q: 'الاسم العلمي للجلبانة هو Lathyrus sativus', ans: true, exp: 'صحيح — وتتبع العائلة البقولية' },
+
+  { q: 'الاسم العلمي للجوت الملوخيا هو Corchorus olitorius', ans: true, exp: 'صحيح — وهو أحد نوعي الجوت المشهورين في المنهج' },
+  { q: 'تتميز ورقة نبات الذرة الشامية بوجود أذينات كبيرة عند قاعدة النصل', ans: false, exp: 'خطأ — الذرة الشامية ليس لها أذينات، الشعير هو الذي يتميز بأذينات كبيرة' },
+  { q: 'نورة القمح تسمى سنبلة مركبة بينما نورة الذرة الرفيعة تسمى قنديل', ans: true, exp: 'صحيح — القنديل هو الاسم الشائع لنورة الذرة الرفيعة الدالية' },
+  { q: 'الاسم العلمي لنبات القرطم هو Carthamus tinctorius', ans: true, exp: 'صحيح — وهو يتبع العائلة المركبة Compositae' },
+  { q: 'ساق نبات قصب السكر مقسمة إلى عقد وسلاميات ومصمتة تماماً', ans: true, exp: 'صحيح — الساق مصمتة ومخزن بها العصير السكري' },
+  { q: 'ثمرة بنجر السكر من الناحية النباتية هي ثمرة "برة"', ans: false, exp: 'خطأ — الثمرة في البنجر عبارة عن كبسولة منشقة أو كرة بذور، البرة في النجيلية' },
+  { q: 'يتميز جذر الفول السوداني بوجود عقد بكتيرية تقوم بتثبيت النيتروجين الجوي', ans: true, exp: 'صحيح — لكونه محصولاً بقولياً' },
+  { q: 'الاسم العلمي لنبات التيل هو Hibiscus cannabinus', ans: true, exp: 'صحيح — وهو من محاصيل الألياف اللحائية' },
+  { q: 'تتكون ورقة نبات عباد الشمس من ثلاث وريقات بيضاوية', ans: false, exp: 'خطأ — ورقة عباد الشمس بسيطة قلبية الشكل وليست مركبة' },
+  { q: 'تسمى النورة المؤنثة في الذرة الشامية "العرنوس" أو الكوز', ans: true, exp: 'صحيح — وهي نورة إبطية' },
+  { q: 'الاسم العلمي للبرسيم الحجازي هو Medicago sativa', ans: true, exp: 'صحيح — وهو محصول بقولي معمر' },
+  { q: 'تتميز ساق الكتان بأنها ساق متفرعة جداً من القاعدة', ans: false, exp: 'خطأ — ساق الكتان تكون قائمة وغير متفرعة إلا عند القمة للحصول على ألياف جيدة' },
+  { q: 'تحتوي زهرة القطن على 5 سبلات ملتحمة تسمى "الكأس"', ans: true, exp: 'صحيح — ويوجد خارجها 3 قنابات كبيرة تسمى الكأس الخارجي' },
+  { q: 'الاسم العلمي لنبات السمسم هو Sesamum indicum', ans: true, exp: 'صحيح — ويتبع العائلة السمسمية Pedaliaceae' },
+  { q: 'تتميز ورقة نبات الترمس بأنها مركبة ريشية فردية', ans: false, exp: 'خطأ — ورقة الترمس مركبة راحية (وريقاتها تخرج من نقطة واحدة)' },
+  { q: 'تعتبر نورة البرسيم المصري نورة هامة (رؤوس) مدمجة', ans: true, exp: 'صحيح — تضم عدداً كبيراً من الأزهار الصغيرة' },
+  { q: 'الاسم العلمي لمحصول الخروع هو Ricinus communis', ans: true, exp: 'صحيح — وبذرته غنية بالزيت' },
+  { q: 'تنشأ الجذور الدعامية في الذرة الشامية من العقد العليا للساق', ans: false, exp: 'خطأ — تنشأ من العقد السفلية "فوق" سطح الأرض لتثبيت النبات' },
+  { q: 'تتميز بذرة الفول البلدي بوجود سرة سوداء أو بيضاء واضحة', ans: true, exp: 'صحيح — وهي مكان اتصال البذرة بالقرنة' },
+  { q: 'الاسم العلمي للعدس هو Lens esculenta', ans: true, exp: 'صحيح — ويتبع العائلة البقولية' },
+  { q: 'نصل ورقة الذرة الرفيعة يكون أملس تماماً ولا يحتوي على شعيرات', ans: false, exp: 'خطأ — نصل ورقة الذرة الرفيعة قد يحتوي على شعيرات خشنة عند القاعدة' },
+  { q: 'تتكون ثمرة القطن من كبسولة تسمى "اللوزة"', ans: true, exp: 'صحيح — وهي الثمرة التي تحتوي على الألياف والبذور' },
+  { q: 'الاسم العلمي لقمح الخبز هو Triticum aestivum', ans: true, exp: 'صحيح — وهو قمح سداسي الكروموسومات' },
+  { q: 'ساق نبات الأرز تكون جوفاء إلا عند العقد', ans: true, exp: 'صحيح — وهذه صفة عامة في معظم النجيليات' },
+  { q: 'تتميز ورقة نبات الخروع بأنها بسيطة راحية فصية (شكل اليد)', ans: true, exp: 'صحيح — وتحمل على أعناق طويلة' },
+  { q: 'الاسم العلمي لنبات الرامي هو Boehmeria nivea', ans: true, exp: 'صحيح — وأليافه قوية جداً' },
+  { q: 'تحتوي حبة القمح على جنين يقع في جهة الظهر من الحبة', ans: false, exp: 'خطأ — الجنين يقع في جهة البطن (الجهة المنخفضة) من الحبة' },
+  { q: 'تتميز أزهار نبات الحمص بلونها الأبيض أو البنفسجي وتخرج فرادى', ans: true, exp: 'صحيح — تخرج في آباط الأوراق' },
+  { q: 'الاسم العلمي لنبات السيزال هو Agave sisalana', ans: true, exp: 'صحيح — وهو من محاصيل الألياف الورقية' },
+  { q: 'تتكون قرنة اللوبيا من صمامين وتحتوي على عدة بذور كلية الشكل', ans: true, exp: 'صحيح — بذور اللوبيا تشبه شكل الكلية' },
+  { q: 'الاسم العلمي للذرة السكرية هو Zea mays rugosa', ans: true, exp: 'صحيح — وهي أحد طرز الذرة الشامية' },
+  { q: 'نبات عباد الشمس يتميز بساق خشبية صلبة جداً', ans: false, exp: 'خطأ — ساق عباد الشمس عشبية خشنة وليست خشبية' },
+  { q: 'توجد "الأذينات" في نبات الشعير وتكون كبيرة وملساء وتلتف حول الساق', ans: true, exp: 'صحيح — وهي العلامة المميزة للشعير تحت الميكروسكوب أو بالعين' },
+  { q: 'الاسم العلمي لنبات الحلبة هو Trigonella foenum-graecum', ans: true, exp: 'صحيح — وتتميز برائحة نفاذة' },
+  { q: 'ثمرة نبات الكتان كبسولة كروية تنقسم إلى 5 مساكن وبها 10 بذور', ans: true, exp: 'صحيح — وهي ثمرة جافة' },
+  { q: 'تتميز ورقة نبات البنجر في السنة الأولى بأنها تخرج في شكل روزيت (وردة)', ans: true, exp: 'صحيح — وتكون العروق فيها واضحة' },
+  { q: 'الاسم العلمي لنبات الجلبانة هو Lathyrus sativus', ans: true, exp: 'صحيح — وتستخدم كعلف أخضر' },
+  { q: 'تكون الجذور في نبات القصب ليفية عرضية تنشأ من عقد العقلة المزروعة', ans: true, exp: 'صحيح — لأن التكاثر خضري' },
+  { q: 'يحتوي مبيض زهرة الفول البلدي على بويضة واحدة فقط', ans: false, exp: 'خطأ — المبيض يحتوي على عدة بويضات تعطي عدة بذور داخل القرنة' },
+  { q: 'الاسم العلمي لقمح المكرونة (الصلب) هو Triticum durum', ans: true, exp: 'صحيح — ويمتاز بحبوب صلبة جداً' },
+  { q: 'تتميز نورة الأرز بأنها دالية قائمة ثم تنحني عند النضج', ans: true, exp: 'صحيح — وتحمل السنيبلات على أفرع' },
+  { q: 'ساق نبات الذرة الرفيعة تكون دائماً قصيرة ولا تتعدى المتر', ans: false, exp: 'خطأ — قد تصل ساق بعض أصناف الذرة الرفيعة إلى 3-4 أمتار' },
+  { q: 'الاسم العلمي لنبات الترمس الأبيض هو Lupinus albus', ans: true, exp: 'صحيح — وهو المشهور في مصر' },
+  { q: 'تتميز ورقة نبات السمسم بأنها بسيطة تختلف في شكلها من قاعدة الساق للقمة', ans: true, exp: 'صحيح — الأوراق السفلية مفصصة أو مسننة والعلوية رمحية' },
+  { q: 'نبات الكتان يتبع العائلة الكتانية Linaceae', ans: true, exp: 'صحيح — وهي عائلة مستقلة عن القطن' },
+  { q: 'تسمى الشعيرات الموجودة على بذرة القطن "الزغب" و "الشعر"', ans: true, exp: 'صحيح — الشعر هو الألياف الطويلة والزغب هو الشعيرات القصيرة' },
+  { q: 'الاسم العلمي لنبات فول الصويا هو Glycine max', ans: true, exp: 'صحيح — وهو غني بالبروتين والزيت' },
+  { q: 'تتكون زهرة العائلة النجيلية من عصيفة وآتية و3 أسدية ومبيض', ans: true, exp: 'صحيح — هذا هو التركيب الزهري النموذجي' },
+  { q: 'يتميز جذر بنجر السكر بأنه وتدي متضخم مخزني', ans: true, exp: 'صحيح — الجزء المتضخم هو الذي يحتوي على السكروز' },
+  { q: 'الاسم العلمي لنبات حشيشة السودان هو Sorghum sudanense', ans: true, exp: 'صحيح — وهي نوع من الذرة الرفيعة العلفية' }
+];
+// ==================== T/F ENGINE ====================
+let tfIndex = 0, tfScore = 0, tfAnswered = false;
+
+function saveTFProgress() {
+  localStorage.setItem('tfProgress', JSON.stringify({ tfIndex, tfScore }));
+}
+
+function loadTFProgress() {
+  const saved = localStorage.getItem('tfProgress');
+  return saved ? JSON.parse(saved) : null;
+}
+
+function clearTFProgress() {
+  localStorage.removeItem('tfProgress');
+}
+
+function openTF() {
+  const saved = loadTFProgress();
+  if (saved && saved.tfIndex > 0 && saved.tfIndex < TF_QUESTIONS.length) {
+    document.getElementById('tfContainer').innerHTML = `
+      <div class="question-card" style="text-align:center">
+        <div class="question-text">💾 عندك تقدم محفوظ!</div>
+        <p style="color:#555;margin-bottom:24px">وصلت لسؤال ${saved.tfIndex + 1} من ${TF_QUESTIONS.length} | النتيجة: ${saved.tfScore}</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-restart" onclick="resumeTF()" style="background:linear-gradient(135deg,#2d6a4f,#1a3a2a)">▶️ كمّل من نفس المكان</button>
+          <button class="btn-restart" onclick="initTF()" style="background:linear-gradient(135deg,#888,#555)">🔄 ابدأ من الأول</button>
+        </div>
+      </div>`;
+    document.getElementById('tfBar').style.width = ((saved.tfIndex / TF_QUESTIONS.length) * 100) + '%';
+    document.getElementById('tfCounter').textContent = `سؤال ${saved.tfIndex + 1} من ${TF_QUESTIONS.length} | النتيجة: ${saved.tfScore}`;
+  } else {
+    initTF();
+  }
+}
+
+function resumeTF() {
+  const saved = loadTFProgress();
+  if (saved) {
+    tfIndex = saved.tfIndex;
+    tfScore = saved.tfScore;
+    tfAnswered = false;
+    renderTF();
+  }
+}
+
+function initTF() {
+  tfIndex = 0; tfScore = 0; tfAnswered = false;
+  clearTFProgress();
+  renderTF();
+}
+
+function renderTF() {
+  const total = TF_QUESTIONS.length;
+  if (tfIndex >= total) { showTFResult(); return; }
+  document.getElementById('tfBar').style.width = ((tfIndex/total)*100) + '%';
+  document.getElementById('tfCounter').textContent = `سؤال ${tfIndex+1} من ${total} | النتيجة: ${tfScore}`;
+  const q = TF_QUESTIONS[tfIndex];
+  tfAnswered = false;
+  document.getElementById('tfContainer').innerHTML = `
+    <div class="question-card">
+      <div class="question-text">🤔 ${q.q}</div>
+      <div class="tf-buttons">
+        <button class="tf-btn true-btn" onclick="answerTF(true)">✅ صح</button>
+        <button class="tf-btn false-btn" onclick="answerTF(false)">❌ غلط</button>
+      </div>
+      <div class="explanation-box" id="tfExpBox">💡 <strong>التفسير:</strong> ${q.exp}</div>
+      <button class="btn-next" id="tfNextBtn" onclick="nextTF()">السؤال التالي ←</button>
+    </div>`;
+}
+
+function answerTF(answer) {
+  if (tfAnswered) return;
+  tfAnswered = true;
+  const q = TF_QUESTIONS[tfIndex];
+  const trueBt = document.querySelector('.true-btn');
+  const falseBt = document.querySelector('.false-btn');
+  trueBt.disabled = true; falseBt.disabled = true;
+  if (answer === q.ans) {
+    tfScore++;
+    (answer ? trueBt : falseBt).classList.add('correct');
+  } else {
+    (answer ? trueBt : falseBt).classList.add('wrong');
+    (q.ans ? trueBt : falseBt).classList.add('correct');
+    document.getElementById('tfExpBox').classList.add('show');
+  }
+  document.getElementById('tfNextBtn').classList.add('show');
+}
+
+function nextTF() {
+  tfIndex++;
+  saveTFProgress();
+  renderTF();
+}
+
+function showTFResult() {
+  clearTFProgress();
+  const pct = Math.round((tfScore/TF_QUESTIONS.length)*100);
+  let msg = pct >= 90 ? '🏆 ممتاز جداً!' : pct >= 70 ? '👍 كويس!' : '📚 راجع تاني';
+  document.getElementById('tfContainer').innerHTML = `
+    <div class="result-screen">
+      <div class="result-score">${pct}%</div>
+      <h3>${msg}</h3>
+      <p>أجبت صح على ${tfScore} من ${TF_QUESTIONS.length} سؤال</p>
+      <button class="btn-restart" onclick="initTF()">🔄 حل تاني</button>
+    </div>`;
+  document.getElementById('tfBar').style.width = '100%';
+}
+</script>
+</body>
+</html>
